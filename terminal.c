@@ -6,11 +6,11 @@
 /* 
  * Routines in terminal abstraction:
  *
- *	set_term()
+ *	setup_term()
  *		Initialize terminal, clear the screen.
  *
  *	unset_term()
- *		Return terminal to state before set_term().
+ *		Return terminal to state before setup_term().
  *
  *	char2sym(char)
  *		Return the symbol used to display the given char in the
@@ -216,7 +216,7 @@ int	termmode = -1;
  * and termcap subroutine packages, although the old code is used
  * for screen refresh.
  */
-set_term()
+setup_term()
 {
 	printf("\n\nInitializing terminal ...");
 	fflush(stdout);
