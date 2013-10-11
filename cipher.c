@@ -4,7 +4,7 @@
  * Robert W. Baldwin, January 1985.
  */
 
-
+#include	<stdlib.h>
 #include	<stdio.h>
 #include	<math.h>
 #include	"window.h"

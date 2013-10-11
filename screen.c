@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #include <strings.h>
 #include "window.h"
 #include "terminal.h"
@@ -154,7 +155,7 @@ int	dir;
 plstring(s)
 char	*s;
 {
-	for ( ; *s != NULL ; s++)  {
+	for ( ; *s != 0; s++)  {
 		putsym((*s) & 0377);
 	}
 	ccolumn += strlen(s);
