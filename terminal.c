@@ -99,6 +99,8 @@
 
 #include	<curses.h>
 #include	<sgtty.h>
+#include	<stdlib.h>
+#include	<string.h>
 #include	<strings.h>
 #include	"window.h"
 #include	"terminal.h"

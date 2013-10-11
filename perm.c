@@ -6,6 +6,7 @@
  */
 
 
+#include	<stdlib.h>
 #include	<stdio.h>
 #include	"window.h"
 #include	"specs.h"
