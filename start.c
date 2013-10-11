@@ -83,7 +83,7 @@ char	*argv[];
 
 	load_tables();
 
-	set_term();
+	setup_term();
 	signal(SIGTSTP, stop_handler);
 	signal(SIGINT, kill_handler);
 
@@ -115,7 +115,7 @@ stop_handler()
 
 	/* Return here when/if program restarted. */
 	/* Note that the signal mask is restored by longjmp. */
-	set_term();
+	setup_term();
 	longjmp(saved_stack, 0);
 }
 
