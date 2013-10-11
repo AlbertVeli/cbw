@@ -197,9 +197,11 @@ keycmd	*keycmdp;		/* Pointer to next free entry. */
 
 
 
+#if 0
 /* Saved process control characters.
  */
 struct	tchars	saved_tchars;
+#endif
 
 
 /* Buffer for termcap entry. */
@@ -510,6 +512,7 @@ char	**strp;
  */
 noflow()
 {
+#if 0
 	struct	tchars	new_tchars;
 	
 	/* Turn off C-Q, C-S flow control. */
@@ -524,6 +527,7 @@ noflow()
 		perror("noflow iocl set");
 		exit(1);
 	}
+#endif
 }
 
 
@@ -531,10 +535,12 @@ noflow()
  */
 restore_flow()
 {
+#if 0
 	if (ioctl(0, TIOCSETC, &saved_tchars) < 0)  {
 		perror("restore_flow iocl set");
 		exit(1);
 	}
+#endif
 }
 
 
