@@ -94,7 +94,7 @@ gwindow *(iwebster())
 webgraphics(str)
 char	*str;
 {
-	for ( ; *str != NULL ; str++)  {
+	for ( ; *str != 0; str++)  {
 		switch (*str)  {
 		  default:
 			break;

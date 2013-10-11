@@ -266,7 +266,7 @@ get_kenv()
 kenv_termcap(str)
 char	*str;
 {
-	*str = NULL;
+	*str = 0;
 
 	if (term_up != NULL)  {
 		strcat(str, cmdnames[CGO_UP - 1].label);
@@ -327,9 +327,9 @@ char	*var;
 {
 	int	cmd_code;
 
-	while (*var != NULL)  {
+	while (*var != 0)  {
 		if (! read_varlabel(&var, cmdnames, &cmd_code))  {
-			if (*var == NULL)
+			if (*var == 0)
 			  	break;
 			disperr("Can't parse label in read_keymap.");
 			exit(1);
@@ -367,9 +367,9 @@ char	*var;
 {
 	int	sym_idx;
 
-	while (*var != NULL)  {
+	while (*var != 0)  {
 		if (! read_varlabel(&var, symnames, &sym_idx))  {
-			if (*var == NULL)
+			if (*var == 0)
 			  	break;
 			disperr("Can't parse label in GRAPHICSMAP.");
 			exit(1);
@@ -438,7 +438,7 @@ char	**valp;
 
 	var = *strp;
 	bp = buf;
-	while ((*var != NULL) && (index(VARTERM, *var) == NULL))  {
+	while ((*var != 0) && (index(VARTERM, *var) == NULL))  {
 		*bp = read_slashed(&var);
 	       	bp++;
         }

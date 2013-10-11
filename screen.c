@@ -155,7 +155,7 @@ int	dir;
 plstring(s)
 char	*s;
 {
-	for ( ; *s != NULL ; s++)  {
+	for ( ; *s != 0; s++)  {
 		putsym((*s) & 0377);
 	}
 	ccolumn += strlen(s);
