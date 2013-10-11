@@ -6,11 +6,11 @@
 /* 
  * Routines in terminal abstraction:
  *
- *	set_term()
+ *	setup_term()
  *		Initialize terminal, clear the screen.
  *
  *	unset_term()
- *		Return terminal to state before set_term().
+ *		Return terminal to state before setup_term().
  *
  *	char2sym(char)
  *		Return the symbol used to display the given char in the
@@ -197,9 +197,11 @@ keycmd	*keycmdp;		/* Pointer to next free entry. */
 
 
 
+#if 0
 /* Saved process control characters.
  */
 struct	tchars	saved_tchars;
+#endif
 
 
 /* Buffer for termcap entry. */
@@ -216,7 +218,7 @@ int	termmode = -1;
  * and termcap subroutine packages, although the old code is used
  * for screen refresh.
  */
-set_term()
+setup_term()
 {
 	printf("\n\nInitializing terminal ...");
 	fflush(stdout);
@@ -510,6 +512,7 @@ char	**strp;
  */
 noflow()
 {
+#if 0
 	struct	tchars	new_tchars;
 	
 	/* Turn off C-Q, C-S flow control. */
@@ -524,6 +527,7 @@ noflow()
 		perror("noflow iocl set");
 		exit(1);
 	}
+#endif
 }
 
 
@@ -531,10 +535,12 @@ noflow()
  */
 restore_flow()
 {
+#if 0
 	if (ioctl(0, TIOCSETC, &saved_tchars) < 0)  {
 		perror("restore_flow iocl set");
 		exit(1);
 	}
+#endif
 }
 
 

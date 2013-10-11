@@ -25,9 +25,9 @@ extern		web_first();	/* Defined below. */
 
 /* Strings for outlining the window.
  */
-char	*webhead = "| Word Match";
-char	*webpane = "|";
-char	*webbot  = "`-------------------------";
+char	webhead[] = "| Word Match";
+char	webpane[] = "|";
+char	webbot[]  = "`-------------------------";
 
 /* Window for the list of matches. */
 
