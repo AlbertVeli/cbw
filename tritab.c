@@ -3,6 +3,7 @@
  */
 
 #include	<math.h>
+#include	<stdlib.h>
 #include	<stdio.h>
 #include	"window.h"
 #include	"specs.h"
@@ -119,7 +120,7 @@ FILE	*inp;
 			printf("\nOverflowed Trigram buffer.\n");
 			exit(0);
 			}
-		*trig_buf_next++ = NULL;
+		*trig_buf_next++ = 0;
 
 		trig_tab[trig_tab_next].prob = trigram_prob;
 		trig_tab[trig_tab_next].trigram = trigram_start;
