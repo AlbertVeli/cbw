@@ -8,6 +8,7 @@
 
 #include	<stdio.h>
 #include	"window.h"
+#include	"dblock.h"
 #include	"terminal.h"
 #include	"layout.h"
 #include	"specs.h"
@@ -29,27 +30,6 @@ extern	int		gperm[];
 #define pack(x,y)		(((x&0377)<<8) + y)
 #define unpack(x,y,v)	tmpv = v; x = ((tmpv>>8)&0377);  y = (tmpv&0377);
 
-
-/* Keystroke handler table. */
-
-extern	int	kntadvance();
-extern	kntundo();
-extern	kntnextg();
-extern	kntenter();
-
-keyer	kntktab[] = {
-		{CNEXTGUESS, kntnextg},
-		{CACCEPT, kntenter},
-		{CUNDO, kntundo},
-		{CGO_UP, jogup},
-		{CGO_DOWN, jogdown},
-		{CGO_LEFT, jogleft},
-		{CGO_RIGHT, jogright},
-		{0, NULL},
-};
-
-
-
 /* Private data structure for guess blocks. */
 
 #define	kntinfo		struct	xkntinfo
@@ -69,6 +49,33 @@ struct	xkntinfo	{
 		int		min_show;	/* Smallest count to show. */
 		};
 
+/* Keystroke handler table. */
+
+
+/* Forward declarations */
+void initknt(void);
+int kntadvance(kntinfo *knti);
+void kntundo(gwindow *knt);
+void kntnextg(gwindow *knt);
+void kntenter(gwindow *knt);
+void kntclrzee(kntinfo *knti);
+int zeecount(kntinfo *knti);
+void kntfirst(gwindow *knt, int row, int col);
+void kntdraw(gwindow *knt);
+void kntclrlast(kntinfo *knti);
+
+
+keyer	kntktab[] = {
+		{CNEXTGUESS, kntnextg},
+		{CACCEPT, kntenter},
+		{CUNDO, kntundo},
+		{CGO_UP, jogup},
+		{CGO_DOWN, jogdown},
+		{CGO_LEFT, jogleft},
+		{CGO_RIGHT, jogright},
+		{0, NULL},
+};
+
 
 /* Private buffers. */
 int		kzee[BLOCKSIZE+1];
@@ -80,13 +87,9 @@ kntinfo	kntprivate;
 int		kntinit	= FALSE;
 
 
-extern	kntdraw(), kntfirst();		/* Defined below. */
-
-
 /* This routine is called by the user command to clear the zee matrix.
  */
-char	*clearzee(str)
-char	*str;		/* Command line */
+char *clearzee(char *str __attribute__((unused)))
 {
 	int		i;
 	kntinfo	*knti;
@@ -118,8 +121,7 @@ char	*str;		/* Command line */
  * Set up dbstore to show the block after the last block
  * the the user says to consider complete.
  */
-char	*kntguess(str)
-char	*str;		/* Command line */
+char *kntguess(char *str)
 {
 	int		i;
 	int		from,to;
@@ -172,8 +174,7 @@ char	*str;		/* Command line */
 
 /* Clear the zee permutation and update any display info.
  */
-kntclrzee(knti)
-kntinfo	*knti;
+void kntclrzee(kntinfo *knti)
 {
 	int		i;
 
@@ -187,8 +188,7 @@ kntinfo	*knti;
 /* Compute the next successful guess of a wiring of ZEE.
  * Show it to the user for acceptance/rejection.
  */
-kntnextg(knt)
-gwindow	*knt;
+void kntnextg(gwindow *knt)
 {
 	int		guesscnt;
 	kntinfo	*knti;
@@ -217,8 +217,7 @@ gwindow	*knt;
 /* Clear last guess in zee, zeeinv, perm.
  * Note that perm only holds the results of the last guess.
  */
-kntclrlast(knti)
-kntinfo	*knti;
+void kntclrlast(kntinfo *knti)
 {
 	int		tmpv;	/* For unpack. */
 	int		x,y;
@@ -246,15 +245,14 @@ kntinfo	*knti;
  * If out of acceptable guesses, returns 0.
  * Perm must be cleared before calling this.
  */
-int	kntadvance(knti)
-kntinfo	*knti;
+int kntadvance(kntinfo *knti)
 {
 	int		guesscount;
 	int		i;
 	int		tmpv;		/* For unpack. */
 	int		x,y;
 	int		tx,ty;
-	int		u,v;
+	int		v;
 	int		tu,tv;
 	int		*a2;		/* The permutation as in u = A2 x */
 	int		*a1;		/* The permutation as in v = A1 y */
@@ -347,8 +345,7 @@ kntinfo	*knti;
 /* Enter our current guess into the decryption block.
  * Clear out the undo stack.
  */
-kntenter(knt)
-gwindow	*knt;
+void kntenter(gwindow *knt)
 {
 	kntinfo	*knti;
 
@@ -364,14 +361,13 @@ gwindow	*knt;
 
 /* Undo the last guess.
  */
-kntundo(knt)
-gwindow	*knt;
+void kntundo(gwindow *knt)
 {
 	kntinfo	*knti;
 
 	knti = ((kntinfo *) knt->wprivate);
 	knti->ustkp = knti->savedustkp;
-	kntclrlast();
+	kntclrlast(knti);
 	dbsundo(&dbstore);
 
 	sprintf(statmsg, UNDOMSG, zeecount(knti));
@@ -384,9 +380,7 @@ gwindow	*knt;
  * Put up a help message.
  * Accept the cursor where it is.
  */
-kntfirst(knt, row, col)
-gwindow	*knt;
-int		row,col;	/* Current coordinates. */
+void kntfirst(gwindow *knt, int row, int col)
 {
 	usrhelp(&user, KNTHELP);
 	wl_setcur(knt, row, col);
@@ -396,8 +390,7 @@ int		row,col;	/* Current coordinates. */
 
 /* (re)Draw the window.
  */
-kntdraw(knt)
-gwindow	*knt;
+void kntdraw(gwindow *knt)
 {
 	int			i;
 	int			row, col;		/* Original row and column. */
@@ -431,8 +424,7 @@ gwindow	*knt;
 /* Return number of known wires in Zee.
  * Max is 256.
  */
-int	zeecount(knti)
-kntinfo	*knti;
+int zeecount(kntinfo *knti)
 {
 	return(permcount(knti->zee));
 }
@@ -440,8 +432,7 @@ kntinfo	*knti;
 
 /* Store Zee permutation on a file.
  */
-storezee(fd)
-FILE	*fd;
+void storezee(FILE *fd)
 {
 	writeperm(fd, kzee);
 }
@@ -450,8 +441,7 @@ FILE	*fd;
 /* Load the Zee permutation from a file.
  * Update display if necessary.
  */
-loadzee(fd)
-FILE	*fd;
+void loadzee(FILE *fd)
 {
 	int		i;
 	kntinfo	*knti;
@@ -482,9 +472,8 @@ FILE	*fd;
 
 /* Set up all the pointers in kntprivate.
  */
-initknt()
+void initknt(void)
 {
-	int		i;
 	gwindow	*knt;
 	kntinfo	*knti;
 

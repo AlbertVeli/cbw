@@ -10,6 +10,7 @@
 #include	"window.h"
 #include	"specs.h"
 #include	"cipher.h"
+#include	"terminal.h"
 
 
 #define	DEBUG	FALSE
@@ -18,7 +19,7 @@
 /* Decode the cblock into pblock using perm.
  * Return FALSE if find a non-ascii character, else 1.
  */
-decode(cblock, pblock, perm)
+int decode(cblock, pblock, perm)
 char	cblock[];
 int		pblock[];
 int		perm[];
@@ -60,7 +61,6 @@ int		initpos;
 char	*thing;		/* NULL terminated string. */
 {
 	int	iplace;		/* Current placement of trigram in plaintext block. */
-	int i;			/* Index for initializing arrays. */
 	int	pchar;		/* Plaintext character. */
 	int	spchar;		/* Plaintext character cyclically shifted by its pos. */
 	int	*spstkp;
@@ -73,7 +73,9 @@ char	*thing;		/* NULL terminated string. */
 	char *p;
 
 	p = thing;
-	for (thinglen = 0 ; *p++ != 0 ; thinglen++) ;
+	for (thinglen = 0 ; *p++ != 0 ; thinglen++) {
+	  ;
+	}
 
   for (iplace = initpos ; iplace < BLOCKSIZE-thinglen ; iplace++) {
 	spstkp = spstack;
@@ -145,7 +147,7 @@ int		x;
 int		y;
 int		*pvec;
 {
-	decode_wire_but(eci, x, y, pvec, NONE, NONE);
+	return decode_wire_but(eci, x, y, pvec, NONE, NONE);
 }
 
 
@@ -171,7 +173,7 @@ int		first, last;
 {
 	int		delta;
 	int		pos, firstflag;
-	int		c,i;
+	int		c;
 	int		firstpos;
 	int		otherpos;
 	int		pvecindex;
@@ -225,7 +227,7 @@ int		first, last;
 /* Fill in an interger buffer from the characters of a byte buffer.
  * The buffers must have equal lengths.
  */
-char2buf(cptr, iptr, length)
+void char2buf(cptr, iptr, length)
 char	*cptr;
 int		*iptr;
 int		length;
@@ -242,7 +244,7 @@ int		length;
  * If the integer value is NONE, use nonechar instead.
  * The buffers must have equal lengths.
  */
-buf2char(cptr, iptr, length, nonechar)
+void buf2char(cptr, iptr, length, nonechar)
 char	*cptr;
 int		*iptr;
 int		length;
@@ -266,11 +268,11 @@ int		nonechar;
  * terminated string.  The interger vector is terminated by the
  * value NONE.
  */
-str2pvec(cptr, iptr)
+void str2pvec(cptr, iptr)
 char	*cptr;
 int	*iptr;
 {
-	while (*iptr++ = (MODMASK & *cptr++));
+	while ((*iptr++ = (MODMASK & *cptr++)));
 	*(--iptr) = NONE;
 }
 
@@ -278,7 +280,7 @@ int	*iptr;
 /* Fill in a null terminated string with the integers from a NONE
  * terminated vector.
  */
-pvec2str(cptr, iptr)
+void pvec2str(cptr, iptr)
 char	*cptr;
 int		*iptr;
 {
@@ -291,7 +293,7 @@ int		*iptr;
 
 /* Print a pvec on a stream.
  */
-print_pvec(out, pvec)
+void print_pvec(out, pvec)
 FILE	*out;
 int		*pvec;
 {
@@ -321,7 +323,7 @@ int		pos;
 perment	permvec[];
 {
 	int		wcount;
-	int		i, c, tmp;
+	int		i, c;
 	int		x,y;
 	char	*cp;
 	int		curpos;
@@ -368,7 +370,7 @@ perment	permvec[];
 
 /* Copy routine for permvecs.
  */
-permvec_copy(from, to, maxnum)
+void permvec_copy(from, to, maxnum)
 perment	from[];
 perment	to[];
 int		maxnum;
@@ -384,7 +386,7 @@ int		maxnum;
 
 /* Copy routine for pvecs.
  */
-pvec_copy(from, to, maxnum)
+void pvec_copy(from, to, maxnum)
 int		from[];
 int		to[];
 int		maxnum;

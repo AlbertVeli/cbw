@@ -1,3 +1,6 @@
+#ifndef __WINDOW_H
+#define __WINDOW_H
+
 /* 
  * Structure definitions for the window and keyboard routines.
  * The first half of this file contains structure declarations.
@@ -30,7 +33,7 @@
 
 struct	xkeyer	{
 	key	keychar;	/* Must be -1 or 0 for last entry in table. */
-	int	(*keyproc)();	/* Called with: window and key arg. */
+	void	(*keyproc)();	/* Called with: window and key arg. */
 	};
 
 
@@ -114,24 +117,27 @@ struct	xtwindow	{
 
 /* Procedures from windowlib.c */
 
-extern	int	wl_driver(/* wtab */);	/* Run window system. */
-extern	int	wl_refresh(/* wtab */);	/* Redraw all windows. */
+extern	void	wl_driver(/* wtab */);	/* Run window system. */
+extern	void	wl_refresh(/* wtab */);	/* Redraw all windows. */
 extern	int	wl_rcursor(/* w */);	/* Restore old cursor position. */
 extern	int	wl_setcur(/* w, row, col */);	/* Set cursor relative. */
 extern	int	wl_noop(/* w */);	/* Do nothing. */
 extern	int	wl_hascur(/* w */);	/* Return TRUE if cursor in window. */
-extern	int	wl_draw(/* w */);	/* Invoke window's redraw routine. */
+extern	void	wl_draw(/* w */);	/* Invoke window's redraw routine. */
 extern	int	wl_twdraw(/* w */);	/* Redraw for twindow. */
 extern	int	wl_dldraw(/* w */);	/* Redraw for displine. */
-extern	wl_dlleft(/* w */), wl_dlright(/* w */);
-extern	wl_dlfdel(/* w */), wl_dlbdel(/* w */), wl_dlclr(/* w */);
-extern	wl_dlinsert(/* w, k */);
-extern	wl_dlgetvar(/* w, buf */);	/* Fill buf with variable part. */
-extern	wl_dlsetvar(/* w, str */);	/* Set variable part from string. */
-extern	wl_nxtarg(/* line */);		/* Adv to next %. */
-extern	int	clrdline(/* dl */);	/* Blankout all chars in displine. */
+extern	void	wl_dlleft(/* w */);
+extern	void	wl_dlright(/* w */);
+extern	void	wl_dlfdel(/* w */);
+extern	void	wl_dlbdel(/* w */);
+extern	void	wl_dlclr(/* w */);
+extern	void	wl_dlinsert(/* w, k */);
+extern	void wl_dlgetvar(/* w, buf */);	/* Fill buf with variable part. */
+extern	void wl_dlsetvar(/* w, str */);	/* Set variable part from string. */
+extern	void wl_nxtarg(/* line */);	/* Adv to next %. */
+extern	void	clrdline(/* dl */);	/* Blankout all chars in displine. */
 extern	int	setdline(/* dl */);	/* Set first chars of displine. */
-extern	int	wl_erase(/* w */);	/* Blank out a window. */
+extern	void	wl_erase(/* w */);	/* Blank out a window. */
 extern	int	wl_outline(/* w */);	/* Outline w/o changing insides. */
 extern	int	key2graphic(/* c */);	/* Returns key to represent char c. */
 
@@ -147,11 +153,34 @@ extern	int	noopkey(/* w, k */);	/* A do-nothing keyproc. */
  * the window, w, they update the window's cursor position field.
  * They can be used as keyprocs.
  */
-extern	int	jogleft(/* w, k */);
-extern	int	jogright(/* w, k */);
-extern	int	jogup(/* w, k */);
-extern	int	jogdown(/* w, k */);
+extern	void	jogleft(/* w, k */);
+extern	void	jogright(/* w, k */);
+extern	void	jogup(/* w, k */);
+extern	void	jogdown(/* w, k */);
 
+/* Procedures from screen.c */
+extern void clrscreen(void);
+extern void setcursor(/* line, column */);
+extern int rowcursor(void);
+extern int colcursor(void);
+extern int getcursor(void);
+extern void jogcursor(/* dir */);
+extern void plstring(/* s */);
+extern void plnspaces(/* n */);
+extern void plnchars(/* n, c */);
+extern void vertnchars(/* n,c */);
+extern void deleol(void);
+extern void deleos(void);
+extern void disperr(/* s */);
+extern void Puts( /* s */);
+
+/* dblock.c, dline.c */
+extern void setrange(/* line, str, firstcol, lastcol */);
+extern void setnadline(/* line, str, col */);
+extern void setndline(/* line, str, col */);
+extern void setadline(/* line, str */);
+extern void dlsetvar(/* line, str */);
+extern void dlgetvar(/* line, buf */);
 
 /* Static variables from keylib.c */
 
@@ -173,3 +202,5 @@ extern	keyer	arwktab[];		/* Default key table for arrow keys. */
 #define	TAB		(CNTRL & 'I')
 #define	SPACE		(' ')
 
+
+#endif /* __WINDOW_H */

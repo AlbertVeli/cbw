@@ -9,8 +9,10 @@
 #include	"specs.h"
 #include	"cipher.h"
 #include	"autotri.h"
+#include	"terminal.h"
 
-
+/* Forward declarations */
+void load_tri(FILE *inp);
 
 #define	DEFAULTTRIGLIST	"trigrams.txt"
 int		trig_loaded = FALSE;
@@ -41,7 +43,7 @@ char	trig_buf[TRIGBUFSZ];
 
 /* Load the trigram table from the named file.
  */
-load_tri_from(filename)
+void load_tri_from(filename)
 char	*filename;
 {
 	FILE	*inp;
@@ -65,10 +67,9 @@ char	*filename;
  * <blank line>
  * <End of file>
  */
-load_tri(inp)
-FILE	*inp;
+void load_tri(FILE *inp)
 {
-	int		i,n;
+	int		n;
 	int		tmp;
 	int		c;
 	float	v, trigram_prob;
@@ -133,7 +134,7 @@ FILE	*inp;
 
 /* Print the trigram table onto a stream.
  */
-print_tri(out)
+void print_tri(out)
 FILE	*out;
 {
 	int		i;

@@ -11,7 +11,7 @@
 #include	"layout.h"
 #include	"specs.h"
 #include	"cipher.h"
-
+#include	"dblock.h"
 
 #define	DEBUG		FALSE
 #define	AUTOREPEAT	1	/* Number of times to repeat guess loop. */
@@ -23,8 +23,18 @@
 
 extern	char	mcbuf[];
 extern	ecinfo	gecinfo;
-extern	ec_init();
-extern	lpbdraw(), lpbfirst(), lpbenter(), lpbundo();
+
+/* Forward declarations */
+void ec_init();
+void lpbdraw();
+void lpbfirst();
+void lpbenter();
+void lpbundo();
+void lp_init();
+void lp_autoguess();
+int lp_best_pos();
+int lp_best_char();
+void lp_accept();
 
 /* Gloabal State. */
 keyer	lpbktab[] = {
@@ -79,7 +89,7 @@ char	*str;			/* Command line */
 
 /*  (re) Draw the window.
  */
-lpbdraw(ecb)
+void lpbdraw(ecb)
 gwindow	*ecb;
 {
 	int			i;
@@ -113,7 +123,7 @@ gwindow	*ecb;
 
 /* First time cursor enters window.
  */
-lpbfirst(ecb, row, col)
+void lpbfirst(ecb, row, col)
 gwindow	*ecb;
 int			row, col;
 {
@@ -124,7 +134,7 @@ int			row, col;
 
 /* Enter the guess into the decryption block.
  */
-lpbenter(ecb)
+void lpbenter(ecb)
 gwindow	*ecb;
 {
 	ecinfo		*ecbi;
@@ -137,7 +147,7 @@ gwindow	*ecb;
 
 /* Undo the last guess.
  */
-lpbundo(ecb)
+void lpbundo(ecb)
 gwindow	*ecb;
 {
 	ecinfo		*ecbi;
@@ -160,16 +170,14 @@ gwindow	*ecb;
  * avoid picking one.
  * Modfies eci.
  */
-lp_autoguess(eci, accept_level, prob_cutoff)
+void lp_autoguess(eci, accept_level, prob_cutoff)
 reg	ecinfo	*eci;
 	float	accept_level;
 	float	prob_cutoff;
 {
-	int		i;
 reg	int		c;
 	int		ntried;
 reg	int		classpos;
-	int		*permp;
 	int		repeat;
 
 for(repeat = 0 ; repeat < AUTOREPEAT ; repeat++)  {
@@ -186,9 +194,12 @@ for(repeat = 0 ; repeat < AUTOREPEAT ; repeat++)  {
 			}
 		}
 #if (AUTOREPEAT > 1)
+{
+	int i;
 	for (i = 0 ; i < eci->nclasses ; i++)  {
 		eci->classlist[i].changed = TRUE;
 		}
+}
 #endif
 	}
 }
@@ -233,7 +244,7 @@ reg	float	sdev1, sdev2;		/* Standard Deviation for 1st and 2nd stats. */
  * value for the ciphertext character at position firstpos.
  * If there is not a clear best value, NONE is returned.
  */
-int	lp_best_char(eci, firstpos, alevel, min_prob)
+int lp_best_char(eci, firstpos, alevel, min_prob)
 reg		ecinfo	*eci;
 int		firstpos;
 float	alevel;		/* Level to accept a guess ~= prob(right)/prob(wrong) */
@@ -247,8 +258,9 @@ float	min_prob;
 	float	best_score;
 	int		best_char;
 reg	int		c;
-	int		x,y;
+#if DEBUG
 	int		class;
+#endif
 	float	count;
 reg	gsinfo	*gsi;
 	gsinfo	tmpgsi;
@@ -319,7 +331,7 @@ reg	gsinfo	*gsi;
  * The changed flag is set for positions pos-1 and pos+1 (if they exist).
  * The used flag is set for the class(es) that now have an accepted value.
  */
-lp_accept(eci, firstpos, firstpchar)
+void lp_accept(eci, firstpos, firstpchar)
 reg		ecinfo	*eci;
 int		firstpos;
 int		firstpchar;
@@ -408,7 +420,7 @@ reg	clinfo	*classp;
  * The changed flag for the selected class is cleared.
  * Returns a position or NONE.
  */
-int	lp_best_pos(eci, min_reliability)
+int lp_best_pos(eci, min_reliability)
 reg		ecinfo	*eci;
 int		min_reliability;
 {
@@ -442,13 +454,13 @@ reg	clinfo	*endclassp;
 /* Fill in equiv class info from given ciphertext block
  * and permutation.
  */
-lp_init(cipher, perm, eci)
+void lp_init(cipher, perm, eci)
 char	cipher[];
 int		perm[];
 reg		ecinfo	*eci;
 {
 	int		firstflag;	/* Used by for_pos_in_class */
-	int		i,j;
+	int		i;
 	int		firstpos, char_count, pair_count;
 reg	int		pos;
 reg	clinfo	*class;
@@ -505,7 +517,7 @@ reg	clinfo	*class;
 /* Initialize a guess info structure.
  * Also clears the guess buffer.
  */
-gsi_init(gsi, pbuf, gssbuf)
+void gsi_init(gsi, pbuf, gssbuf)
 reg		gsinfo	*gsi;
 		int		*pbuf;		/* Accepted characters. */
 reg		int		*gssbuf;	/* Buffer for new guesses. */
@@ -522,7 +534,7 @@ reg	int		i;
 
 /* Clear out a guess from a gsi.
  */
-gsi_clear(gsi)
+void gsi_clear(gsi)
 reg	gsinfo	*gsi;
 {
 reg	int		*ip;
@@ -539,7 +551,7 @@ reg	int		*ip;
  * If that asumption conflicts with eci->perm, then nothing is added.
  * Returns the number of characters added.
  */
-int	gsi_class_guess(gsi, eci, firstpos, c)
+int gsi_class_guess(gsi, eci, firstpos, c)
 reg		gsinfo	*gsi;
 reg		ecinfo	*eci;
 		int		firstpos;
@@ -598,7 +610,7 @@ reg	int		pos;
 
 /* Dump class table onto a stream.
  */
-lp_dclasses(out, eci)
+void lp_dclasses(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {

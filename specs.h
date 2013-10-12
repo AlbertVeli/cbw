@@ -1,3 +1,6 @@
+#ifndef __SPECS_H
+#define __SPECS_H
+
 /*
  * Specifications of inter-module dependencies.
  *
@@ -57,26 +60,38 @@ extern	char *(pgate(/* arg-string */));
 
 extern	char *(cmddo(/* cmdtab, string */));
 extern	char *(cmdcomplete(/* cmdtab, string */));
-extern	gblset(/* w, string */);
-extern	gbsswitch(/* w, private, keytable, firsttime, lasttime, draw */);
-extern	gbsclear(/* w */);
-extern	hstadd(/* w, string */);
-extern	usrstatus(/* w, string */);
-extern	usrhelp(/* w, string */);
-extern	dblbnum(/* w, int */);
-extern	int	dbsmerge(/* w, perm */);
-extern	dbssetblk(/* w, int */);
-extern	int	dbsgetblk(/* w */);
-extern	dbstrypq(/* ecbi, pque_hdr, pos */);
+extern	void gblset(/* w, string */);
+extern	void gbsswitch(/* w, private, keytable, firsttime, lasttime, draw */);
+extern	void gbsclear(/* w */);
+extern	int gbspos2row(/* pos */);
+extern	int gbspos2col(/* pos */);
+
+/* extern	hstadd(/\* w, string *\/); */
+extern	void usrstatus(/* w, string */);
+extern	int usrfirst(/* w, row, col */);
+extern	void usrhelp(/* w, string */);
+extern	void dblbnum(/* w, int */);
+extern	int dbsmerge(/* w, perm */);
+extern	void dbssetblk(/* w, int */);
+extern	int dbsgetblk(/* w */);
+extern	void dbstrypq(/* ecbi, pque_hdr, pos */);
 
 extern	float	score(/* pbuf */);
+extern	void	gsi_init(/* gsi, pbuf, gssbuf */);
+extern	void	gsi_clear(/* gsi */);
+extern	int	gsi_class_guess(/* gsi, eci, firstpos, c */);
 extern	float	gsi_1score(/* gsi */);		/* Uses 1st order stats. */
 extern	float	gsi_2score(/* gsi */);		/* Uses 2nd order stats. */
 extern	float	var_1score(/* pvec */);		/* Uses first order stats. */
 extern	float	prob_1score(/* pvec */);	/* Uses first order stats. */
 extern	float	pvec_1score(/* pvec */);	/* Uses first order stats. */
-extern		load_1stats();			/* Loads first order stats. */
-extern		print_1stats();
+extern	void	load_1stats();			/* Loads first order stats. */
+extern	void	print_1stats();
+extern	void load_1stats_from(/* statfname */);
+extern	void load_2stats_from(/* statfname */);
+extern	void load_tri_from(/* filename */);
+
+extern void ec_init(/* char cipher[], int perm[], ecinfo *eci */);
 
 extern	int	decode(/* cbuf, pbuf, perm */); /* FALSE if has bad chars. */
 /* Return -1 if	bad chars, otherwise # of chars added to pvec. */
@@ -91,25 +106,26 @@ extern	int	perm_from_string(/* eci, str, pos, permvec */);
  * ranging from butfirst to butlast.  Returns -1 if any
  * non-ascii chars are deduced, else count of chars. */
 extern	int	permvec2pvec(/* eci, permvec, pvec, butfirst, butlast */);
-extern		permvec_copy(/* from, to, maxnum */);
-extern		pvec_copy(/* from, to, maxnum */);
-extern		print_pvec(/* stream, pvec */);
-extern		char2buf(/* cbuf, pbuf, length */);	/* Fills in pbuf. */
-extern		buf2char(/* cbuf, pbuf, length, nonechar */); /* Fill cbuf. */
-extern		str2pvec(/* string, pvec */);		/* Fills in pvec. */
-extern		pvec2str(/* string, pvec */);		/* Fills in string. */
+extern	void	permvec_copy(/* from, to, maxnum */);
+extern	void	pvec_copy(/* from, to, maxnum */);
+extern	void	print_pvec(/* stream, pvec */);
+extern	int	accept_permvec(/* atri, permvec */);
+extern	void	char2buf(/* cbuf, pbuf, length */);	/* Fills in pbuf. */
+extern	void	buf2char(/* cbuf, pbuf, length, nonechar */); /* Fill cbuf. */
+extern	void	str2pvec(/* string, pvec */);		/* Fills in pvec. */
+extern	void	pvec2str(/* string, pvec */);		/* Fills in string. */
 
 extern	int	fillcbuf(/* blocknum, *cbuf */);   /* Ret TRUE if sucessful. */
 extern	int	*refperm(/* blocknum */);	   /* Ret NULL if fails. */
-extern	copyperm(/* src, dst */);
-extern	readperm(/* fd, permbuffer */);	/* Gets chars from fd to fill perm. */
-extern	writeperm(/* fd, permbuffer */);	   /* Writes perm to file. */
-extern	multperm(/* left, right, result = (left)(right) */);
-extern	expperm(/* src, dst, k */);		   /* dst = src ** k. */
+extern	void copyperm(/* src, dst */);
+extern	void readperm(/* fd, permbuffer */);	/* Gets chars from fd to fill perm. */
+extern	void writeperm(/* fd, permbuffer */);	   /* Writes perm to file. */
+extern	void multperm(/* left, right, result = (left)(right) */);
+extern	void expperm(/* src, dst, k */);		   /* dst = src ** k. */
 extern	int	permcount(/* perm */);		   /* Return # values != -1. */
 extern	int	permwcount(/* perm */);		   /* Return # of wires. */
 
-extern		approx_init();		/* Call before fexp or isqrt. */
+extern	void	approx_init();		/* Call before fexp or isqrt. */
 extern	float	fexp(/* float */);	/* Fast exp func. */
 extern	float	isqrt[];		/* Sqrts of integers < BLOCKSIZE */
 
@@ -165,3 +181,5 @@ extern	char	statmsg[];		/* Buffer to build status messages. */
 #ifndef NULL
 #define	NULL		0	/* A zero by any other name ... */
 #endif
+
+#endif /* __SPECS_H */

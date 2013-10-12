@@ -1,3 +1,6 @@
+#ifndef __PQUEUE_H
+#define __PQUEUE_H
+
 /*
  * Priority queue declarations.
  *
@@ -5,8 +8,8 @@
  */
 
 extern	int		pque_full(/* pque_hdr */);
-extern			pque_add(/* pque_hdr */);
-extern			pque_init(/* pque_hdr, min_score, pque_tab, pque_size */);
+extern	void		pque_add(/* pque_hdr */);
+extern	void		pque_init(/* pque_hdr, min_score, pque_tab, pque_size */);
 
 #define	pqueue_ent	struct xpqueue_ent
 pqueue_ent	{
@@ -22,3 +25,5 @@ pqueue_hdr	{
 		float		max_score;		/* Score < max */
 		pqueue_ent	*pque_tab;		/* Ptr to first entry. */
 		};
+
+#endif /* __PQUEUE_H */

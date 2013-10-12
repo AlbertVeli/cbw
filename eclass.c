@@ -11,6 +11,7 @@
 #include	"layout.h"
 #include	"specs.h"
 #include	"cipher.h"
+#include	"dblock.h"
 
 
 #define	DEBUG	FALSE
@@ -23,9 +24,18 @@
 
 extern	char	mcbuf[];
 extern	ecinfo	gecinfo;
-extern	ecbdraw(), ecbfirst(), ecbenter(), ecbundo();
 
-/* Gloabal State. */
+/* Forward declarations */
+void ecbdraw(gwindow *ecb);
+void ecbfirst(gwindow *ecb, int row, int col);
+void ecbenter(gwindow *ecb);
+void ecbundo(gwindow *ecb);
+void ec_autoguess(ecinfo *ecbi, float alevel);
+int ec_best(ecinfo *eci, int firstpos, float alevel);
+int ec_compsize(ecinfo *eci, int member);
+void ec_addsize(/* eci, size, firstmember */);
+
+/* Global State. */
 float	ec_accept_level = 0.0;
 keyer	ecbktab[] = {
 		{CACCEPT, ecbenter},
@@ -79,7 +89,7 @@ char	*str;			/* Command line */
 
 /*  (re) Draw the window.
  */
-ecbdraw(ecb)
+void ecbdraw(ecb)
 gwindow	*ecb;
 {
 	int			i;
@@ -113,9 +123,7 @@ gwindow	*ecb;
 
 /* First time cursor enters window.
  */
-ecbfirst(ecb, row, col)
-gwindow	*ecb;
-int			row, col;
+void ecbfirst(gwindow *ecb, int row, int col)
 {
 	usrhelp(&user, ECBHELP);
 	wl_setcur(ecb, row, col);
@@ -124,8 +132,7 @@ int			row, col;
 
 /* Enter the guess into the decryption block.
  */
-ecbenter(ecb)
-gwindow	*ecb;
+void ecbenter(gwindow *ecb)
 {
 	ecinfo		*ecbi;
 
@@ -137,8 +144,7 @@ gwindow	*ecb;
 
 /* Undo the last guess.
  */
-ecbundo(ecb)
-gwindow	*ecb;
+void ecbundo(gwindow *ecb)
 {
 	ecinfo		*ecbi;
 
@@ -152,7 +158,7 @@ gwindow	*ecb;
 
 /* Dump plaintext chars onto stream.
  */
-ec_dplain(out, eci)
+void ec_dplain(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {
@@ -174,7 +180,7 @@ ecinfo	*eci;
 
 /* Dump shifted cipher chars onto stream.
  */
-ec_dscipher(out, eci)
+void ec_dscipher(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {
@@ -196,7 +202,7 @@ ecinfo	*eci;
 
 /* Dump table of next pointers onto a stream.
  */
-ec_dnext(out, eci)
+void ec_dnext(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {
@@ -206,7 +212,7 @@ ecinfo	*eci;
 
 /* Dump size table onto a stream.
  */
-ec_dsizetab(out, eci)
+void ec_dsizetab(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {
@@ -223,7 +229,7 @@ ecinfo	*eci;
 
 /* Dump our permutation onto a stream.
  */
-ec_dperm(out, eci)
+void ec_dperm(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {
@@ -233,7 +239,7 @@ ecinfo	*eci;
 
 /* Dump the permutation map onto a stream.
  */
-ec_dpmap(out, eci)
+void ec_dpmap(out, eci)
 FILE	*out;
 ecinfo	*eci;
 {
@@ -244,9 +250,7 @@ ecinfo	*eci;
 
 /* Update ecbi to reflect the automatic guesses.
  */
-ec_autoguess(ecbi, alevel)
-ecinfo	*ecbi;
-float	alevel;
+void ec_autoguess(ecinfo *ecbi, float alevel)
 {	int		i, c;
 	int		classpos;
 	int		x, y;
@@ -285,7 +289,9 @@ int		plainchar;
 	float	score;
 	int		pvec[BLOCKSIZE+1];
 	int		ccount;
+#if DEBUG
 	char	str[BLOCKSIZE+1];
+#endif
 
 
 	if (decode_class(eci, firstpos, plainchar, pvec) == ERROR)  {
@@ -317,16 +323,13 @@ int		plainchar;
  * value for the ciphertext character at position firstpos.
  * If there is not a clear best value, NONE is returned.
  */
-int	ec_best(eci, firstpos, alevel)
-ecinfo	*eci;
-int		firstpos;
-float	alevel;
+int ec_best(ecinfo *eci, int firstpos, float alevel)
 {
 	float	total_score, score;
 	float	best_score;
 	int		best_char;
 	int		c;
-	int		x,y;
+	/* int		x,y; */
 	float	count;
 
 #if DEBUG
@@ -385,12 +388,9 @@ float	alevel;
 /* Fill in equiv class info from given ciphertext block
  * and permutation.
  */
-ec_init(cipher, perm, eci)
-char	cipher[];
-int		perm[];
-ecinfo	*eci;
+void ec_init(char cipher[], int perm[], ecinfo *eci)
 {
-	int		i,j;
+	int		i;
 	int		lastmember;
 	int		firstpos, size;
 
@@ -431,7 +431,7 @@ ecinfo	*eci;
  * has a size less than the size arg.  Shuffle down the list
  * to create a hole and insert the new entry.
  */
-ec_addsize(eci, size, firstmember)
+void ec_addsize(eci, size, firstmember)
 register	ecinfo	*eci;
 int		size;
 int		firstmember;
@@ -460,9 +460,7 @@ int		firstmember;
 
 /* Compute the size of a clas given a pointer to one of its members.
  */
-int	ec_compsize(eci, member)
-ecinfo	*eci;
-int		member;
+int ec_compsize(ecinfo *eci, int member)
 {
 	int		size;
 	int		position;

@@ -35,7 +35,6 @@ char	*cbuf;
 	FILE	*fd;
 	long	offset;
 	long	res;
-	int		i;
 
 	if ((blocknum < 0) || (NPERMS <= blocknum))  return(FALSE);
 
@@ -48,7 +47,7 @@ char	*cbuf;
 	fseek(fd, offset, FROMSTART);
 	res = ftell(fd);
 	if (res != offset) {
-		printf("\nSeek failed on %s to %d, got %d.\n", cipherfile, offset,res);
+		printf("\nSeek failed on %s to %d, got %d.\n", cipherfile, (int)offset, (int)res);
 		exit(0);
 		}
 

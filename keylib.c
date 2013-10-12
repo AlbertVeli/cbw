@@ -27,7 +27,7 @@ keyer	arwktab[]	=	{
  * If the cursor is still in the window, they update the
  * cursor location in the window's data structure.
  */
-jogup(w,k)
+void jogup(w,k)
 gwindow	*w;
 key		k;
 {
@@ -37,7 +37,7 @@ key		k;
 	jogcursor(1);
 }
 
-jogdown(w,k)
+void jogdown(w,k)
 gwindow	*w;
 key		k;
 {
@@ -47,7 +47,7 @@ key		k;
 	jogcursor(2);
 }
 
-jogleft(w,k)
+void jogleft(w,k)
 gwindow	*w;
 key		k;
 {
@@ -57,7 +57,7 @@ key		k;
 	jogcursor(3);
 }
 
-jogright(w,k)
+void jogright(w,k)
 gwindow	*w;
 key		k;
 {
@@ -99,7 +99,7 @@ keyer	*ktab;		/* Table of handling procedures */
 
 /* Lookup and call a keyproc in the window's key handling table.
  */
-dokey(w, k)
+int dokey(w, k)
 gwindow		*w;
 key			k;
 {

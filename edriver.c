@@ -14,14 +14,21 @@ ecinfo	myecinfo;
 char	plainbuf[BLOCKSIZE+1];
 float	accept_level;
 
-extern	ec_best(), ec_dplain(), ec_dscipher();
-extern	ec_dnext(), ec_dsizetab(), ec_dperm(), ec_dpmap();
-extern	ec_init(), ec_best(), ec_cscore();
+extern	void ec_best();
+extern	void ec_dplain();
+extern	void ec_dscipher();
+extern	void ec_dnext();
+extern	void ec_dsizetab();
+extern	void ec_dperm();
+extern	void ec_dpmap();
+extern	void ec_init();
+extern	void ec_best();
+extern	void ec_cscore();
 
 extern	char	mcbuf[];
 extern	char	*fname;			/* Used by fillcbuf. */
 /* Test routine for equiv class info. */
-main(argc, argv)
+int main(argc, argv)
 int		argc;
 char	*argv[];
 {
@@ -79,10 +86,12 @@ char	*argv[];
 	for (blknum = 0 ; blknum <= maxblock ; blknum++) {
 		do_block(eci, blknum, infile, inplain);
 		}
+
+	return 0;
 }
 
 
-do_block(eci, blknum, cipherfile, plainfile)
+void do_block(eci, blknum, cipherfile, plainfile)
 ecinfo	*eci;
 int		blknum;
 char	*cipherfile, *plainfile;

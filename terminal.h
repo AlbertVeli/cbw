@@ -1,3 +1,6 @@
+#ifndef __TERMINAL_H
+#define __TERMINAL_H
+
 /*
  * Definitions for terminals (symbols, graphics, keystroke, commands).
  *
@@ -147,3 +150,13 @@ labelv	{
 
 
 #define	DIGITS	"0123456789"
+
+/* terminal.c */
+extern int  char2sym(int pchar);
+extern void putsym(int symbol);
+extern void enter_mode(int mode);
+/* char-io.c */
+extern void write_char(/* out, c */);
+extern int read_char(/* inp */);
+
+#endif  /* __TERMINAL_H */

@@ -13,6 +13,7 @@
 #include	"cipher.h"
 
 #include	"dblock.h"
+#include	"terminal.h"
 
 
 ecinfo	t_ecinfo;
@@ -21,13 +22,10 @@ ecinfo	t_ecinfo;
 /* Try all the possible characters at the current position.
  * Display those that do not generate any conflicts.
  */
-dbstryall(dbs, k)
-gwindow	*dbs;
-key		k;
+void dbstryall(gwindow *dbs, key k __attribute__((unused)))
 {
 	int		col, pos;
 	int		oldrow, oldcol;
-	int		i;
 	int		tchar;
 	ecinfo	*ecbi;
 	dbsinfo	*dbsi;
@@ -55,7 +53,7 @@ key		k;
 		tchar = the_pque[pque_index].value1;
 		plnchars(1, char2sym(tchar));
 		}
-  alldone:
+/* alldone: */
 	plnchars((dbs->wwidth) - col, ' ');
 	wl_setcur(dbs, oldrow, oldcol);
 }
@@ -64,7 +62,7 @@ key		k;
 /* Try all chars in position pos.  Added them to a priority queue.
  * The most likely character appears first.
  */
-dbstrypq(ecbi, pque_hdr, pos)
+void dbstrypq(ecbi, pque_hdr, pos)
 ecinfo		*ecbi;
 pqueue_hdr	*pque_hdr;
 int			pos;
@@ -72,8 +70,6 @@ int			pos;
 	int		plainchar;
 	int		added;
 	float	score;
-	extern	float	score2_scale, score1_scale;
-	float	score1, score2;
 	float	sdev1, sdev2;		/* Standard Deviation for 1st and 2nd stats. */
 	gsinfo	tmpgsi;
 	gsinfo	*gsi;
@@ -106,9 +102,7 @@ int			pos;
  * For now, a pattern is extracted an a word lookup command gets executed.
  * The keystroke argument, k, is not used.
  */
-dbswrdsrch(dbs, k)
-gwindow	*dbs;
-key		k;
+void dbswrdsrch(gwindow *dbs, key k __attribute__((unused)))
 {
 	int	oldrow, oldcol;		/* To reset cursor pos if needed. */
 	int	pos;			/* Char offset in block. */

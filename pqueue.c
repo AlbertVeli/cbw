@@ -11,7 +11,7 @@
 
 /* Initialize a pqueue header with the given parameters.
  */
-pque_init(pque_hdr, max_score, pque_tab, pque_size)
+void pque_init(pque_hdr, max_score, pque_tab, pque_size)
 pqueue_hdr	*pque_hdr;
 float		max_score;
 pqueue_ent	*pque_tab;
@@ -43,7 +43,7 @@ pqueue_hdr	*pque_hdr;
  * has a size less than the size arg.  Shuffle down the list
  * to create a hole and insert the new entry.
  */
-pque_add(pque_hdr, score, value1, value2)
+void pque_add(pque_hdr, score, value1, value2)
 pqueue_hdr	*pque_hdr;
 float		score;
 int			value1;

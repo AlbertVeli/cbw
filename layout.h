@@ -1,3 +1,6 @@
+#ifndef __LAYOUT_H
+#define __LAYOUT_H
+
 /*
  * Constants that define the layout of the screen.
  *
@@ -36,3 +39,5 @@
 #define USRHEIGHT	(MAXHEIGHT-(GBHEIGHT+1)-(DBHEIGHT+1)-(1))
 /* total - guess block and title - decrypt block and title - banner */
 #define USRWIDTH	MAXWIDTH		/* Width of I/O window. */
+
+#endif /* __LAYOUT_H */

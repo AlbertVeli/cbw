@@ -9,13 +9,13 @@
 #include	"cipher.h"
 
 
-extern	str2gsi();
+extern	void str2gsi();
 
 gsinfo	mygsi;
 int		kwnbuf[100], gssbuf[100];
 
 /* Test routine for statistics. */
-main(argc, argv)
+int main(argc, argv)
 int		argc;
 char	*argv[];
 {
@@ -63,13 +63,15 @@ char	*argv[];
 
 		printf("\n");
 		}
+
+	return 0;
 }
 
 
 /* Fill in guess info block from string.  Treat all chars as
  * consecutive, except "." means unknown.
  */
-str2gsi(str, gsi)
+void str2gsi(str, gsi)
 char	*str;
 gsinfo	*gsi;
 {
@@ -97,7 +99,7 @@ gsinfo	*gsi;
 
 /* Copy in to out deleting the character "."
  */
-stripdots(in, out)
+void stripdots(in, out)
 char	*in, *out;		/* Null terminated strings. */
 {
 	while (*in != NULL)  {

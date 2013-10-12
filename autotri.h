@@ -1,3 +1,6 @@
+#ifndef __AUTOTRI_H
+#define __AUTOTRI_H
+
 /*
  * Definitions for automatically guessing with trigrams. 
  */
@@ -38,6 +41,10 @@ atrinfo	{
 		perment		best_permvec[PERMSZ];
 		};
 
+extern void atr_init(/* cipher, perm, atri */);
+extern void atrdraw(/* atr */);
+extern void atr_autoguess(/* atri */);
 
 extern	trig_ent	trig_tab[];
 
+#endif /* __AUTOTRI_H */

@@ -12,6 +12,7 @@
 
 #include	<stdlib.h>
 #include	<stdio.h>
+#include	<unistd.h>
 #include	<signal.h>
 #include	<setjmp.h>
 #include	"window.h"
@@ -30,8 +31,19 @@
 
 /* Keystroke behavior that is the same in all windows.
  */
-extern		alldraw(), jumpcmd();
+extern	void alldraw();
+extern	void jumpcmd();
 extern	char	*getenv();
+extern	void setup_term(void);
+extern	void unset_term(void);
+extern	int getcmd(void);
+
+/* Forward declarations */
+void load_tables(void);
+void stop_handler(int sig);
+void kill_handler(int sig);
+void initwindows(void);
+void done(int status);
 
 keyer	topktab[] = {
 		{CREFRESH, alldraw},
@@ -51,12 +63,10 @@ char		pfilebuf[100];
 jmp_buf		saved_stack;
 
 
-main(argc, argv)
+int main(argc, argv)
 int		argc;
 char	*argv[];
 {
-	extern	stop_handler();
-	extern	kill_handler();
 	char	*q, *pp, *pc;
 
 	if (argc < 2)  {
@@ -74,13 +84,13 @@ char	*argv[];
 	q = argv[1];
 	pc = cipherfile = cfilebuf;
 	pp = permfile = pfilebuf;
-	while (*pp++ = *pc++ = *q++);
+	while ((*pp++ = *pc++ = *q++));
 	pp--;
 	pc--;
 	q = ".cipher";
-	while (*pc++ = *q++);
+	while ((*pc++ = *q++));
 	q = ".perm";
-	while (*pp++ = *q++); 
+	while ((*pp++ = *q++)); 
 
 	load_tables();
 
@@ -99,6 +109,8 @@ char	*argv[];
 	
 	wl_driver(wtable);
 	done(0);			/* Fell off windows, we're done. */
+
+	return 0;
 }
 
 
@@ -106,7 +118,7 @@ char	*argv[];
  * Restore screen and exit.
  * On restart, setup screen, redraw screen, and abort to top loop.
  */
-stop_handler()
+void stop_handler(int sig __attribute__((unused)))
 {
 	setcursor(MAXHEIGHT, 1);
 	fflush(stdout);
@@ -124,7 +136,7 @@ stop_handler()
 /* Handle C-C signal (kill program).
  * Restore screen and exit.
  */
-kill_handler()
+void kill_handler(int sig __attribute__((unused)))
 {
 	setcursor(MAXHEIGHT, 1);
 	printf("\n");
@@ -137,7 +149,7 @@ kill_handler()
 
 /* Load stat tables.
  */
-load_tables()
+void load_tables(void)
 {
 	printf("\n\nLoading letter statistics ...");
 	fflush(stdout);
@@ -173,8 +185,7 @@ load_tables()
 /* Quit command
  * This is the prefered way to leave the program.
  */
-char *quitcmd(arg)
-char	*arg;
+char *quitcmd(char *arg __attribute__((unused)))
 {
 	char	c;
 
@@ -185,12 +196,15 @@ char	*arg;
 		  	return(NULL);
 		}
 	done(0);
+
+	/* Will never be reached*/
+	return NULL;
 }
 
 
 /* Exit the program after cleaning up the terminal.
  */
-done(status)
+void done(status)
 int	status;
 {
 	unset_term();
@@ -201,7 +215,7 @@ int	status;
 
 /* (re)Draw all the windows.
  */
-alldraw()
+void alldraw()
 {
 	wl_refresh(wtable);
 }
@@ -211,7 +225,7 @@ alldraw()
  * Tell the current window, that it is losing the cursor, and
  * then tell the user window that it's got the cursor.
  */
-jumpcmd(w)
+void jumpcmd(w)
 gwindow	*w;
 {
 	(*(w->wlast))(w);
@@ -221,7 +235,7 @@ gwindow	*w;
 
 /* Fill in the window table.
  */
-initwindows()
+void initwindows(void)
 {
 	int	i;
 

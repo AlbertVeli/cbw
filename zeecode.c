@@ -28,7 +28,7 @@ char	*permfile = "zeecode.perm";
 
 /* Do the deed.
  */
-main()
+int main(void)
 {
 	int	i;
 	int	*curperm;
@@ -49,13 +49,15 @@ main()
 		pgate(perm, nxtperm, zee, zeeinv);
 		for (i = 0 ; i < BLOCKSIZE ; i++)  perm[i] = nxtperm[i];
 		}
+
+	return 0;
 }
 
 
 /* Compute the permutation after inperm using z and its inverse zi.
  * The result is placed in outperm.
  */
-pgate(inperm, outperm, z, zi)
+void pgate(inperm, outperm, z, zi)
 int	*inperm;
 int	*outperm;
 int	*z;
@@ -81,7 +83,7 @@ int	*zi;
  * and write them to stdout.
  * Return FALSE if reach end of file.
  */
-doblock(p)
+void doblock(p)
 int	p[];
 {
 	int		pos;
@@ -102,7 +104,7 @@ int	p[];
  * the given stream.
  * The block is terminated by a newline character.
  */
-readblock(fd, buf)
+void readblock(fd, buf)
 FILE	*fd;
 int		buf[];
 {

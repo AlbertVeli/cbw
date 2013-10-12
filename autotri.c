@@ -12,7 +12,7 @@
 #include	"specs.h"
 #include	"cipher.h"
 #include	"autotri.h"
-
+#include	"dblock.h"
 
 #define	DEBUGP	FALSE		/* Perm building */
 #define	DEBUGB	FALSE		/* Best guess */
@@ -26,9 +26,15 @@
 
 extern	char	mcbuf[];
 extern	ecinfo	gecinfo;
-extern	atrdraw(), atrfirst(), atrenter(), atrundo();
 
-/* Gloabal State. */
+/* Forward declarations */
+void atrdraw();
+void atrfirst();
+void atrenter();
+void atrundo();
+void atr_guess_init();
+
+/* Global State. */
 char	*trigramstats;		/* Filename for statistics. */
 atrinfo	gatrinfo;
 keyer	atrktab[] = {
@@ -46,16 +52,14 @@ keyer	atrktab[] = {
  * The window is drawn empty, and then filled in with the guess.
  * Return NULL if command completes ok.
  */
-char	*atrguess(str)
+char *atrguess(str)
 char	*str;			/* Command line */
 {
 	gwindow	*atr;
 	atrinfo	*atri;
 	ecinfo	*ecbi;
 	int		*dbsperm;
-	int		i, c;
-	int		classpos;
-	int		x, y;
+	int		i;
 
 	atr = &gbstore;
 	atri = &gatrinfo;
@@ -93,7 +97,7 @@ char	*str;			/* Command line */
 
 /*  (re) Draw the window.
  */
-atrdraw(atr)
+void atrdraw(atr)
 gwindow	*atr;
 {
 	int			i;
@@ -129,7 +133,7 @@ gwindow	*atr;
 
 /* First time cursor enters window.
  */
-atrfirst(atr, row, col)
+void atrfirst(atr, row, col)
 gwindow	*atr;
 int			row, col;
 {
@@ -140,7 +144,7 @@ int			row, col;
 
 /* Enter the guess into the decryption block.
  */
-atrenter(atr)
+void atrenter(atr)
 gwindow	*atr;
 {
 	atrinfo		*atri;
@@ -153,7 +157,7 @@ gwindow	*atr;
 
 /* Undo the last guess.
  */
-atrundo(atr)
+void atrundo(atr)
 gwindow	*atr;
 {
 	dbsundo(&dbstore);
@@ -164,13 +168,12 @@ gwindow	*atr;
 /* Fill in auto-trigram info from given ciphertext block.
  * The filter parameters are not set by this routine.
  */
-atr_init(cipher, perm, atri)
+void atr_init(cipher, perm, atri)
 char	cipher[];
 int		perm[];
 atrinfo	*atri;
 {
 extern	int	*trig_loaded;
-	int		i;
 
 	atri->eci = &gecinfo;
 	if (!trig_loaded)
@@ -182,7 +185,7 @@ extern	int	*trig_loaded;
 
 /* Per guess initialization.
  */
-atr_guess_init(atri)
+void atr_guess_init(atri)
 atrinfo	*atri;
 {
 	atri->best_trigram = NULL;
@@ -202,7 +205,7 @@ atrinfo	*atri;
  * This routine fills in permvec and pvec.
  * Returns -1.0 if guess is unacceptable.
  */
-float	atr_score(atri, trigent, pos, permvec, pvec)
+float atr_score(atri, trigent, pos, permvec, pvec)
 atrinfo		*atri;
 trig_ent	*trigent;
 int			pos;
@@ -213,7 +216,7 @@ int			pvec[];
 	int		i, x, y;
 	int		ccount;
 	int		added;
-	extern	float	logvar;
+	/*	extern	float	logvar; */
 	float	score;
 	ecinfo	*eci;
 	int		butfirst;
@@ -265,7 +268,7 @@ int			pvec[];
  * Fills in atri with additional information.
  * Filtering parameters are in atri.
  */
-char	*atr_best(atri, pos)
+char *atr_best(atri, pos)
 atrinfo	*atri;
 int		pos;
 {
@@ -312,7 +315,7 @@ int		pos;
 /* Merge the given permvector into the permutation table.
  * Return ERROR if there is a conflict, otherwise TRUE.
  */
-int	accept_permvec(atri, permvec)
+int accept_permvec(atri, permvec)
 atrinfo	*atri;
 perment	permvec[];
 {
@@ -351,7 +354,7 @@ perment	permvec[];
 /* Perform automatic guessing given a set of
  * filter parameters in an atrinfo structure.
  */
-atr_autoguess(atri)
+void atr_autoguess(atri)
 atrinfo	*atri;
 {
 	int		pos;

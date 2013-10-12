@@ -7,7 +7,7 @@
 
 #define	EOL	(-37)
 
-write_char(out, c)
+void write_char(out, c)
 FILE	*out;
 int		c;
 {

@@ -15,6 +15,8 @@
 #define	NPERLINE	10		/* How many values per line in save file. */
 #define	FROMSTART	0		/* For fseek call, how offset measured. */
 
+extern void loadzee(FILE *fd);
+extern void storezee(FILE *fd);
 
 /* Input file name for permutations. */
 char	*permfile;
@@ -28,7 +30,7 @@ int		perminit = FALSE;	/* Initialization flag. */
 
 /* Allocate and clear a permutation.
  */
-int	*permalloc()
+int	*permalloc(void)
 {
 	int		i;
 	int		*perm;
@@ -138,7 +140,7 @@ char	*str;
 
 /* Compute a permutation raised to some power.
  */
-expperm(srcperm, dstperm, power)
+void expperm(srcperm, dstperm, power)
 int	*srcperm, *dstperm;
 int	power;
 {
@@ -157,7 +159,7 @@ int	power;
 
 /* Computer product of two permutations.
  */
-multperm(left, right, result)
+void multperm(left, right, result)
 int		*left;
 int		*right;
 int		*result;
@@ -174,7 +176,7 @@ int		*result;
 
 /* Write a permutation onto the given stream.
  */
-writeperm(fd, perm)
+void writeperm(fd, perm)
 FILE	*fd;
 int		perm[];
 {
@@ -192,7 +194,7 @@ int		perm[];
 
 /* Copy a permutation to another buffer.
  */
-copyperm(src, dst)
+void copyperm(src, dst)
 int		src[];
 int		dst[];
 {
@@ -206,7 +208,7 @@ int		dst[];
 
 /* Read a permutation from the given stream into the given buffer.
  */
-readperm(fd, perm)
+void readperm(fd, perm)
 FILE	*fd;
 int		perm[];
 {

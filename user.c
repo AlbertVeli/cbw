@@ -28,11 +28,11 @@
 char	statmsg[MAXWIDTH+1];
 
 
-extern	int	usrfirst();	/* Defined below. */
-extern	int	usrdokey();	/* Defined below. */
-extern	int	usrdraw();	/* Defined below. */
-extern	int	usrup();	/* Defined below. */
-extern	int	usrdown();	/* Defined below. */
+int	usrfirst();	/* Defined below. */
+int	usrdokey();	/* Defined below. */
+int	usrdraw();	/* Defined below. */
+void	usrup();	/* Defined below. */
+void	usrdown();	/* Defined below. */
 
 
 /* Command table. */
@@ -56,7 +56,7 @@ cmdent	usrcmdtab[] = {
 
 
 /* Keystroke table for the user area. */
-extern	usrdocmd();
+void usrdocmd();
 
 /* Keystroke table for the whole user window.
  * The editing on the command line is handled by a sub-window.
@@ -110,7 +110,7 @@ twindow	user = {
  * the line is ignored.
  * If the line is not empty, wcur_col = dl_min_col.
  */
-usrstatus(w, str)
+void usrstatus(w, str)
 twindow	*w;
 char	*str;
 {
@@ -137,7 +137,7 @@ char	*str;
  * If the string is empty, this will clear the help area.
  * Put the cursor back where it was.
  */
-usrhelp(w, str)
+void usrhelp(w, str)
 twindow	*w;
 char	*str;
 {
@@ -159,10 +159,12 @@ char	*str;
 /* Draw the user area.
  * Leaves the cursor on the command line.
  */
-usrdraw(w)
+int usrdraw(w)
 twindow	*w;
 {
 	wl_twdraw(w);
+
+	return 0;
 }
 
 
@@ -214,7 +216,7 @@ gwindow *(iuser())
 /* Behavior of the up arrow key.
  * Move up to the window above us staying in the same column.
  */
-usrup(w, k)
+void usrup(w, k)
 twindow	*w;		/* The user window. */
 key	k;
 {
@@ -226,9 +228,7 @@ key	k;
 /* Behavior of the down arrow key.
  * Move to command line.
  */
-usrdown(w, k)
-twindow	*w;		/* The user window. */
-key	k;
+void usrdown(twindow *w, key k __attribute__((unused)))
 {
 	wl_setcur(w, USRHEIGHT, w->dlines[USRCMD]->wcur_col);
 }
@@ -237,9 +237,7 @@ key	k;
 /* Behavior when cursor first enters the user window.
  * Move to the command line.
  */
-usrfirst(w, row, col)
-twindow	*w;
-int	row, col;	/* Place in window when cursor currently is. */
+int usrfirst(twindow *w, int row __attribute__((unused)), int col)
 {
 	displine *cmdline;
 
@@ -247,13 +245,15 @@ int	row, col;	/* Place in window when cursor currently is. */
 	usrhelp(w, USRHTEXT);
 	cmdline = w->dlines[USRCMD];
 	(*(cmdline->wfirst))(cmdline, 1, col);
+
+	return 0;
 }
 
 
 /* Keystroke handler for user window.
  * If it is not an up-arrow or down-arrow, pass it to the command line.
  */
-usrdokey(w, k)
+int usrdokey(w, k)
 twindow	*w;		/* The user window. */
 key	k;
 {
@@ -264,7 +264,7 @@ key	k;
 	cmdline = w->dlines[USRCMD];
 	usrstatus(&user, "");
 	if (ddokey(w, k, w->wkeyprocs))  {  /* If handled by top window. */
-		return;			    /* Includes doit key. */
+		return 0;			    /* Includes doit key. */
 	}
 
 	if (k == ((CINSERT << CMDSHIFT) | SPACE))  {
@@ -273,16 +273,18 @@ key	k;
 		if (expanded != NULL)  {
 			dlsetvar(cmdline, expanded);
 			wl_dldraw(cmdline);
-			return;
+			return 0;
 			}
 		}
 	(*(cmdline->wkey))(cmdline, k);	/* Else pass to sub-window. */
+
+	return 0;
 }
 
 
 /* Interprete a command.
  */
-usrdocmd(usr)
+void usrdocmd(usr)
 twindow	*usr;
 {
 	char	 cmdbuf[MAXWIDTH+1];

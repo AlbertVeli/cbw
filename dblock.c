@@ -10,6 +10,7 @@
 #include	"terminal.h"
 #include	"layout.h"
 #include	"specs.h"
+#include	"dblock.h"
 
 
 /* Relative layout constants. */
@@ -25,15 +26,26 @@
 
 /* Keystroke handler for decryption block storage. */
 
-extern	dbsup(), dbsdown(), dbsleft(), dbsright();
-extern	dbskey();
-extern	dbsundo();
-extern	dbsdelf();
-extern	dbsdelb();
-extern	dbsnxtblk();
-extern	dbsprvblk();
-extern	dbstryall();
-extern	dbswrdsrch();
+void dbsinit();
+void dbsrmarks();
+void dbsswire();
+void dbscwire();
+void dbssmark();
+void dbscmark();
+void dbscmddone();
+void dbsprev();
+void dbsnext();
+void dbsup();
+void dbsdown();
+void dbsleft();
+void dbsright();
+void dbskey();
+void dbsdelf();
+void dbsdelb();
+void dbsnxtblk();
+void dbsprvblk();
+extern	void dbstryall();
+extern	void dbswrdsrch();
 
 keyer	dbsktab[] = {
 		{CTRYALL, dbstryall},
@@ -104,9 +116,9 @@ twindow		dblabel = {
 
 /* Window for the decrytion block. */
 
-extern	int	dbsdraw();
-extern	int	dbsfirst();
-extern	int	dbslast();
+int	dbsdraw();
+int	dbsfirst();
+int	dbslast();
 
 gwindow		dbstore = {
 		DBSROW,1,		/* Origin. */
@@ -138,7 +150,7 @@ gwindow	*(idblabel())
  * The argument, num, is displayed as it, it is not zero adjusted.
  * The cursor is not moved, and the window is redisplayed.
  */
-dblbnum(label, num)
+void dblbnum(label, num)
 twindow	*label;
 int	num;
 {
@@ -158,7 +170,7 @@ int	num;
  * The argument, num, is displayed as it, it is not zero adjusted.
  * The cursor is not moved, and the window is redisplayed.
  */
-dblpcount(label, num)
+void dblpcount(label, num)
 twindow	*label;
 int	num;
 {
@@ -183,7 +195,6 @@ gwindow	*(idbstore())
 {
 	gwindow		*dbs;
 	dbsinfo		*dbsi;
-	FILE		*fd;
 
 	dbs = &dbstore;
 	dbsi = ((dbsinfo *) dbs->wprivate);
@@ -208,7 +219,7 @@ gwindow	*(idbstore())
  * The plaintext is decoded from the ciphertext and permutation.
  * Updates the label display.
  */
-dbsinit(dbsi)
+void dbsinit(dbsi)
 dbsinfo	*dbsi;
 {
 	int		i;
@@ -236,7 +247,7 @@ dbsinfo	*dbsi;
  * Does setup to allow an undo.
  * Return TRUE if suceesful.
  */
-int	dbsmerge(dbs, perm)
+int dbsmerge(dbs, perm)
 gwindow	*dbs;		/* Ptr to dbstore */
 int	perm[];		/* Permutation */
 {
@@ -281,7 +292,7 @@ int	perm[];		/* Permutation */
  * recompute the plaintext, and update the display.
  * Move the cursor back to where it was.
  */
-dbsundo(dbs)
+void dbsundo(dbs)
 gwindow	*dbs;
 {
 	int	i;
@@ -305,7 +316,7 @@ gwindow	*dbs;
 
 /* (re)Draw the window.
  */
-dbsdraw(dbs)
+int dbsdraw(dbs)
 gwindow	*dbs;
 {
 	int	i;
@@ -351,6 +362,7 @@ gwindow	*dbs;
 
 	wl_setcur(dbs, row, col);
 
+	return 0;
 }
 
 
@@ -358,7 +370,7 @@ gwindow	*dbs;
 /* Draw the plaintext characters on the screen.
  * Does not change the cursor position.
  */
-dbsdpbuf(dbs)
+void dbsdpbuf(dbs)
 gwindow	*dbs;
 {
 	int	i;
@@ -377,7 +389,7 @@ gwindow	*dbs;
  * It does not move the cursor.
  * It does set pbuf.
  */
-dbsdpchar(dbs, pos, pchar)
+void dbsdpchar(dbs, pos, pchar)
 gwindow	*dbs;
 int		pos;
 int		pchar;				/* -1 means no char. */
@@ -399,7 +411,7 @@ int		pchar;				/* -1 means no char. */
 
 /* Convert cipher block position to window row coordinate.
  */
-dbsp2row(pos)
+int dbsp2row(pos)
 int		pos;
 {
 	return(TOPROW + 2*(pos/LINELEN));
@@ -408,7 +420,7 @@ int		pos;
 
 /* Convert cipher block position to window column coordinate.
  */
-dbsp2col(pos)
+int dbsp2col(pos)
 int		pos;
 {
 	return(1 + (pos%LINELEN));
@@ -417,7 +429,7 @@ int		pos;
 
 /* Convert window row and column positions into a  cipher block position.
  */
-int	dbsrc2pos(row, col)
+int dbsrc2pos(row, col)
 int		row, col;
 {
 	return( ((row-TOPROW)/2)*LINELEN  +  (col-1) );
@@ -427,7 +439,7 @@ int		row, col;
 
 /* Reset all the character marks that are set and update the display.
  */
-dbsrmarks(dbs)
+void dbsrmarks(dbs)
 gwindow	*dbs;
 {
 	int	i;
@@ -444,7 +456,7 @@ gwindow	*dbs;
  * Assumes that the window has been erased.
  * Cursor restored to its original place.
  */
-dbsdmarks(dbs)
+void dbsdmarks(dbs)
 gwindow	*dbs;
 {
 	int	i;
@@ -463,8 +475,7 @@ gwindow	*dbs;
  * update the mark flags.
  * Doesn't change the cursor position.
  */
-dbssmark(dbs, pos)
-gwindow	*dbs;
+void dbssmark(gwindow *dbs, int pos)
 {
 	int	row, col;			/* Original position. */
 	dbsinfo	*dbsi;
@@ -485,8 +496,7 @@ gwindow	*dbs;
  * update the mark flags.
  * Doesn't change the cursor position.
  */
-dbscmark(dbs, pos)
-gwindow	*dbs;
+void dbscmark(gwindow *dbs, int pos)
 {
 	int	row, col;			/* Original position. */
 	dbsinfo	*dbsi;
@@ -513,14 +523,13 @@ gwindow	*dbs;
  * By setting pchar to NONE, this can be used to clear the permutation.
  * The cursor position is not changed.
  */
-dbssperm(dbs, pos, pchar)
+void dbssperm(dbs, pos, pchar)
 gwindow	*dbs;
 int	pos;
 int	pchar;
 {
 	int	i;
 reg	dbsinfo	*dbsi;
-	char	*p;
 	int	x;		/* Shifted up cipher text character. */
 	int	y;		/* Shifted up plain text character. */
 
@@ -551,13 +560,12 @@ reg	dbsinfo	*dbsi;
 /* Clear the wiring for perm[x] equals y and update the display.
  * Requires that x be in fact wired to y.
  */
-dbscwire(dbs, x, y)
+void dbscwire(dbs, x, y)
 gwindow	*dbs;
 int	x, y;
 {
 	int	i;
 	dbsinfo	*dbsi;
-	char	*p;
 
 	dbsi = ((dbsinfo *) dbs->wprivate);
 	if (dbsi->perm[x] != y  ||  x == NONE)  return;
@@ -584,12 +592,11 @@ int	x, y;
  * Clear any wiring that was set.
  * Requires x and y not be NONE.
  */
-dbsswire(dbs, x, y)
+void dbsswire(dbs, x, y)
 gwindow	*dbs;
 int	x, y;
 {
 	int	i;
-	char	*p;
 	dbsinfo	*dbsi;
 	dbsi = ((dbsinfo *) dbs->wprivate);
 
@@ -625,9 +632,7 @@ int	x, y;
  * Indicate that we are at the beginning of a command.
  * Put up help message.
  */
-dbsfirst(dbs, row, col)
-gwindow	*dbs;
-int	row, col;		/* Relative to window's origin. */
+int dbsfirst(gwindow *dbs, int row __attribute__((unused)), int col)
 {
 	dbsinfo	*dbsi;
 
@@ -635,33 +640,35 @@ int	row, col;		/* Relative to window's origin. */
 	dbsi->cmdnext = 0;
 	usrhelp(&user, DBSHELP);
 	wl_setcur(dbs, dbs->wcur_row, col);
+
+	return 0;
 }
 
 
 /* Behavior when cursor leaves the window.
  * Complete the command and give it to the history window.
  */
-dbslast(dbs)
+int dbslast(dbs)
 gwindow	*dbs;
 {
 	dbscmddone(dbs);
+
+	return 0;
 }
 
 
 /* A command may be done, if so, send it to the history window.
  * Setup for undo.
  */
-dbscmddone(dbs)
+void dbscmddone(dbs)
 gwindow	*dbs;
 {
-	int		i;
 	dbsinfo	*dbsi;
 
 	dbsi = ((dbsinfo *) dbs->wprivate);
 	if (dbsi->cmdnext != 0)  {
 		dbsi->cmdbuf[dbsi->cmdnext++] = 0;
-/*		hstadd(&history, dbsi->cmdbuf);
-*/
+/*		hstadd(&history, dbsi->cmdbuf); */
 		dbsi->cmdnext = 0;
 		}
 }
@@ -674,8 +681,7 @@ gwindow	*dbs;
  * Moving the cursor also terminates any command that might
  * have been entered.
  */
-dbsup(dbs, k)
-gwindow	*dbs;
+void dbsup(gwindow *dbs, int k __attribute__((unused)))
 {
 	int	row, col;		/* Current relative cursor position. */
 	
@@ -696,8 +702,7 @@ gwindow	*dbs;
 	dbscmddone(dbs);
 }
 
-dbsdown(dbs, k)
-gwindow	*dbs;
+void dbsdown(gwindow *dbs, int k __attribute__((unused)))
 {
 	int	row, col;		/* Current relative cursor position. */
 	
@@ -718,8 +723,7 @@ gwindow	*dbs;
 	dbscmddone(dbs);
 }
 
-dbsleft(dbs, k)
-gwindow	*dbs;
+void dbsleft(gwindow *dbs, int k __attribute__((unused)))
 {
 	int	row, col;		/* Current relative cursor position. */
 	
@@ -730,8 +734,7 @@ gwindow	*dbs;
 	dbscmddone(dbs);
 }
 
-dbsright(dbs, k)
-gwindow	*dbs;
+void dbsright(gwindow *dbs, int k __attribute__((unused)))
 {
 	int	row, col;		/* Current relative cursor position. */
 	
@@ -746,7 +749,7 @@ gwindow	*dbs;
 /* Backup the cursor to the previous position without terminating
  * a command.
  */
-dbsprev(dbs)
+void dbsprev(dbs)
 gwindow	*dbs;
 {
 	int	row, col;		/* Current relative cursor position. */
@@ -768,7 +771,7 @@ gwindow	*dbs;
 /* Advance the cursor to the next position without terminating
  * a command.
  */
-dbsnext(dbs)
+void dbsnext(dbs)
 gwindow	*dbs;
 {
 	int	row, col;		/* Current relative cursor position. */
@@ -790,7 +793,7 @@ gwindow	*dbs;
 
 /* Add the character to the permutation.
  */
-dbskey(dbs, k)
+void dbskey(dbs, k)
 gwindow	*dbs;
 int	k;
 {
@@ -811,7 +814,7 @@ int	k;
  * and update the display.
  * The cursor moves forward one position.
  */
-dbsdelf(dbs)
+void dbsdelf(dbs)
 gwindow	*dbs;
 {
 	int	pos;		/* plaintext block position. */
@@ -832,7 +835,7 @@ gwindow	*dbs;
  * and update the display.
  * The cursor moves backwards one position.
  */
-dbsdelb(dbs)
+void dbsdelb(dbs)
 gwindow	*dbs;
 {
 	int	pos;		/* plaintext block position. */
@@ -852,7 +855,7 @@ gwindow	*dbs;
 
 /* Advance to the next cipher text block (if any).
  */
-dbsnxtblk(dbs)
+void dbsnxtblk(dbs)
 gwindow	*dbs;
 {
 	dbsinfo	*dbsi;
@@ -864,7 +867,7 @@ gwindow	*dbs;
 
 /* Backup to the previous cipher text block (if any).
  */
-dbsprvblk(dbs)
+void dbsprvblk(dbs)
 gwindow	*dbs;
 {
 	dbsinfo	*dbsi;
@@ -879,7 +882,7 @@ gwindow	*dbs;
  * Even if the block number hasn't change, the permutation may have,
  * so we must re-decode the block.
  */
-dbssetblk(dbs, blocknum)
+void dbssetblk(dbs, blocknum)
 gwindow	*dbs;
 int	blocknum;
 {
@@ -901,7 +904,7 @@ int	blocknum;
 
 /* Return the number of the current block.
  */
-dbsgetblk(dbs)
+int dbsgetblk(dbs)
 gwindow	*dbs;
 {
 	dbsinfo	*dbsi;

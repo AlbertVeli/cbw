@@ -1,7 +1,11 @@
+#ifndef __DBLOCK_H
+#define __DBLOCK_H
+
 extern	int	dbsrc2pos();
 extern	int	dbsp2row();
 extern	int	dbsp2col();
-extern	int	dbsdpchar();
+extern	void	dbsdpchar();
+extern	void dbsundo();
 
 
 
@@ -18,3 +22,5 @@ struct	xdbsinfo	{
 		int		*operm;		/* Permutation after last command. */
 		int		blknum;		/* Zero based index of current block. */
 		};
+
+#endif /* __DBLOCK_H */

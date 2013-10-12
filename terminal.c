@@ -98,6 +98,7 @@
 
 
 #include	<curses.h>
+#include	<term.h>
 #include	<sgtty.h>
 #include	<stdlib.h>
 #include	<string.h>
@@ -105,11 +106,6 @@
 #include	"window.h"
 #include	"terminal.h"
 #include	"specs.h"
-
-
-/* Routines from termcap library.
- */
-extern	char *getenv(), *tgetstr(), *tgoto();
 
 
 /* Screen control strings from termcap entry.
@@ -216,11 +212,24 @@ char	free_buf[1000], *fr;		/* Must be global, see tgetstr() */
 int	termmode = -1;
 
 
+/* Forward declarations */
+void get_termstrs(void);
+void get_genv(void);
+void get_kenv(void);
+void noflow(void);
+void read_keymap(char *var);
+void kenv_termcap(char *str);
+int read_varlabel(char **strp, labelv *labeltab, int *valp);
+int read_varval(char **strp, char **valp);
+void read_graphics(char *var);
+void term_beep(void);
+
+
 /* Set up the terminal. This package now makes calls to both curses
  * and termcap subroutine packages, although the old code is used
  * for screen refresh.
  */
-setup_term()
+void setup_term(void)
 {
 	printf("\n\nInitializing terminal ...");
 	fflush(stdout);
@@ -246,7 +255,7 @@ setup_term()
  * The earlier entries have priority, so fill them in from
  * the shell var, then add defaults from a string then termcap.
  */
-get_kenv()
+void get_kenv(void)
 {
 	char	*kenv;
 	char	tcapstr[1000];
@@ -265,8 +274,7 @@ get_kenv()
  * in the termcap file.
  * The string format is like: "up=\Eu:do=\033d".
  */
-kenv_termcap(str)
-char	*str;
+void kenv_termcap(char *str)
 {
 	*str = 0;
 
@@ -324,8 +332,7 @@ char	*str;
 
 /* Add key bindings from the given string to the keycmdtab.
  */
-read_keymap(var)
-char	*var;
+void read_keymap(char *var)
 {
 	int	cmd_code;
 
@@ -350,7 +357,7 @@ char	*var;
 /* Get graphics characters.
  * Set to defaults, then read changes from shell var (if any).
  */
-get_genv()
+void get_genv(void)
 {
 	char	*genv;
 
@@ -364,8 +371,7 @@ get_genv()
 
 /* Read graphics map from the given string.
  */
-read_graphics(var)
-char	*var;
+void read_graphics(char *var)
 {
 	int	sym_idx;
 
@@ -399,10 +405,7 @@ char	*var;
  * Return TRUE is parses ok, else return FALSE.
  * If string empty, return false and set *strp to point to a NULL.
  */
-int read_varlabel(strp, labeltab, valp)
-char	**strp;
-labelv	*labeltab;
-int	*valp;
+int read_varlabel(char **strp, labelv *labeltab, int *valp)
 {
 	char	*str;
 	labelv	*lp;
@@ -431,9 +434,7 @@ int	*valp;
  * on the heap.
  * Return TRUE if things go ok.
  */
-int read_varval(strp, valp)
-char	**strp;
-char	**valp;
+int read_varval(char **strp, char **valp)
 {
 	char	buf[100], *bp;
 	char	*var;
@@ -457,8 +458,7 @@ char	**valp;
  * The symbol \E maps to escape (\033).
  * An unexpected char after the slash is just returned.
  */
-int read_slashed(strp)
-char	**strp;
+int read_slashed(char **strp)
 {
 	char	*str;
 	char	c;
@@ -512,7 +512,7 @@ char	**strp;
 
 /* Turn off flow control characters.
  */
-noflow()
+void noflow(void)
 {
 #if 0
 	struct	tchars	new_tchars;
@@ -535,7 +535,7 @@ noflow()
 
 /* Restore the flow control characters.
  */
-restore_flow()
+void restore_flow(void)
 {
 #if 0
 	if (ioctl(0, TIOCSETC, &saved_tchars) < 0)  {
@@ -548,7 +548,7 @@ restore_flow()
 
 /* Read in the termcap strings.
  */
-get_termstrs()
+void get_termstrs(void)
 {
 	char	*term;
 	int	res;
@@ -617,7 +617,7 @@ get_termstrs()
 
 /* Restore the terminal to its original mode.
  */
-unset_term()
+void unset_term(void)
 {
 	enter_mode(SMNORMAL);
 	Puts(end_kp);		/* Can't tell if this is original. */
@@ -632,8 +632,7 @@ unset_term()
 /* Return the symbol used to display the given char in the
  * decryption window.
  */
-int  char2sym(pchar)
-int	pchar;
+int  char2sym(int pchar)
 {
  	int	gchar;
 
@@ -652,8 +651,7 @@ int	pchar;
 /* Displays the given symbol on the terminal.  Handles
  * entering and exiting graphics or standout mode.
  */
-putsym(symbol)
-int	symbol;
+void putsym(int symbol)
 {
 	int		symcode;
 	symgraph	*gp;
@@ -677,8 +675,7 @@ int	symbol;
 /* Enter a particular mode.  If necessary send escape sequence
  * to the terminal.  Handle terminating the previous mode.
  */
-enter_mode(mode)
-int	mode;
+void enter_mode(int mode)
 {
 	if (termmode == mode)
 	  	return;
@@ -735,9 +732,7 @@ int	mode;
  * If an exact match is found, return the index ( >= 0) of
  * the entry that matched.
  */
-int srch_ktab(ktab, stroke)
-keycmd	ktab[];
-char	*stroke;
+int srch_ktab(keycmd ktab[], char *stroke)
 {
 	int	i;
 	int	nsubstr = 0;		/* Number of close entries */
@@ -757,9 +752,7 @@ char	*stroke;
 /* Return TRUE if the model string starts with the given string.
  * Return false if strlen(given) > strlen(model).
  */
-int substrp(model, given)
-char	*model;
-char	*given;
+int substrp(char *model, char *given)
 {
 	for ( ; (*model != 0) && (*given != 0) ; model++, given++)  {
 		if (*model != *given)
@@ -782,7 +775,7 @@ char	*given;
  * throw away the char that caused no matches in the keycmdtab,
  * beep the terminal, and start over.
  */
-int getcmd()
+int getcmd(void)
 {
 	char	keystroke[10];		/* Chars in keystroke. */
 	int	nchars;			/* Length of keystroke[]. */
@@ -805,7 +798,7 @@ int getcmd()
 
 		  case SK_NOMATCH:
 			if (nchars != 1)  {
-				beep();
+				term_beep();
 				goto start_over;
 			}
 			code = CINSERT;
@@ -817,7 +810,7 @@ int getcmd()
 				break;
 			}
 			else if ((c != LINEFEED) && (c != TAB))  {
-				beep();
+				term_beep();
 				goto start_over;
 			}
 			break;
@@ -836,7 +829,7 @@ int getcmd()
 
 /* Cause the terminal to beep.
  */
-beep()
+void term_beep(void)
 {
 	Puts("\007");			/* C-G */
 }
@@ -856,6 +849,6 @@ register char	*s;
 	t = p = (char*) calloc(strlen(s) + 1, 1);
 	if (t == NULL)
 		return(NULL);
-	while (*t++ = *s++);
-	return(p); 
+	while ((*t++ = *s++));
+	return(p);
 }

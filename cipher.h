@@ -1,3 +1,5 @@
+#ifndef __CIPHER_H
+#define __CIPHER_H
 
 /*
  * Declarations for the information about a block.
@@ -18,10 +20,10 @@
  * firstflag is just an integer used as a flag, so it does not need to be
  * initialized.  eci->next must be a table of next pointers for this block.
  */
-#define	for_pos_in_class(pos, class)  \
-		for ((pos=class)&(firstflag=TRUE) ; \
-			 firstflag || pos != class ; \
-			 (firstflag=FALSE)&(pos = eci->next[pos]))
+#define	for_pos_in_class(pos, class)		     \
+  for ((pos=class)&&(firstflag=TRUE) ;		     \
+       firstflag || pos != class ;		     \
+       (firstflag=FALSE)&&(pos = eci->next[pos]))
 
 
 /* Return TRUE if given wiring conflicts with the wiring
@@ -129,3 +131,7 @@ gsinfo	{
 		int	cpos[SZMAX+1];
 		};
 
+extern int permvec_from_string(/* eci, str, pos, permvec */);
+extern int decode_wire_but(/* eci, x, y, pvec, first, last */);
+
+#endif /* __CIPHER_H */

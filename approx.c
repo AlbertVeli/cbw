@@ -17,6 +17,9 @@
 #define	DXFEXP		0.05	/* Interval width in fexp table. */
 #define	MAXFEXP		(NFEXP * DXFEXP)	/* Max value < this */
 
+/* Forward declarations */
+void sqrt_tab(void);
+void fexp_tab(void);
 
 /* Table of values for exp(-(x*x)/2) starting with zero at intervals of 0.1
  * The values of the derivative of exp(-(x*x)/2) are in fexp_deriv.
@@ -31,7 +34,7 @@ float	isqrt[BLOCKSIZE];
 
 
 #if STANDALONE
-main()
+int main(void)
 {
 	int		i;
 	float	fi;
@@ -40,7 +43,7 @@ main()
 	printf("\nX\t\treal\t\tapprox");
 	printf("\n\n");
 
-	approx_init();
+	approx_init(void);
 
 	for (i = 0 ; i < (NFEXP + 5) ; i++)  {
 		fi = i;
@@ -51,6 +54,8 @@ main()
 		printf("%f", fexp(fi));
 		printf("\n");
 		}
+
+	return 0;
 }
 #endif
 
@@ -58,7 +63,7 @@ main()
 
 /* Initialize the approximation tables.
  */
-approx_init()
+void approx_init(void)
 {
 	sqrt_tab();
 	fexp_tab();
@@ -67,7 +72,7 @@ approx_init()
 
 /* Fill in the table of square roots.
  */
-sqrt_tab()
+void sqrt_tab(void)
 {
 	reg	int		i;
 		float	fi;
@@ -81,7 +86,7 @@ sqrt_tab()
 
 /* Fill in th approximation table for fexp.
  */
-fexp_tab()
+void fexp_tab(void)
 {
 	int		i;
 	float	fi;

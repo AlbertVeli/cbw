@@ -27,8 +27,15 @@
 extern	char	mcbuf[];
 extern	ecinfo	gecinfo;
 extern	atrinfo gatrinfo;
-extern	atrdraw(), atrfirst(), atrenter(), atrundo();
-extern	char	*pwd_init();
+extern	void atrdraw();
+extern	void atrfirst();
+extern	void atrenter();
+extern	void atrundo();
+
+/* Forward declarations */
+char *pwd_init();
+void pwd_autoguess();
+void pwd_guess_init();
 
 /* Gloabal State. */
 char	*word_tab[NWORDS];
@@ -143,7 +150,6 @@ char	cipher[];
 int		perm[];
 atrinfo	*pwdi;
 {
-	int		i;
 	char	*errmsg;
 
 	pwdi->eci = &gecinfo;
@@ -157,7 +163,7 @@ atrinfo	*pwdi;
 
 /* Per guess initialization.
  */
-pwd_guess_init(pwdi)
+void pwd_guess_init(pwdi)
 atrinfo	*pwdi;
 {
 	pwdi->best_trigram = NULL;
@@ -246,7 +252,7 @@ int		pos;
 /* Perform automatic guessing given a set of
  * filter parameters in an atrinfo structure.
  */
-pwd_autoguess(pwdi)
+void pwd_autoguess(pwdi)
 atrinfo	*pwdi;
 {
 	int		pos;

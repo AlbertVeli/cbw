@@ -38,7 +38,7 @@ displine	gblline1 = {
 		dokey,			/* Default keystroke handler. */
 		arwktab,		/* Basic arrow keystroke handler. */
 		1,GBWIDTH,		/* Min and Max col for cursor line */
-};
+		};
 
 displine	*gbllines[] = {		/* List of display lines for the label. */
 			&gblline1,
@@ -90,6 +90,7 @@ gwindow	*(igblabel())
 /* Set the label to indicate the given string.
  * Redisplay the label.
  */
+void
 gblset(label, str)
 twindow	*label;
 char	*str;
@@ -114,8 +115,6 @@ char	*str;
  */
 gwindow	*(igbstore())
 {
-	extern	atrdraw();
-	extern	atr_init();
 	atrinfo	*atri;
 
 	atri = &gatrinfo;
@@ -129,6 +128,7 @@ gwindow	*(igbstore())
  * by changing the keytable, private data pointer, firsttime,
  * and lasttime function routines.
  */
+void
 gbsswitch(gbs, private, keytable, firsttime, lasttime, draw)
 gwindow	*gbs;
 char	*private;
@@ -164,6 +164,7 @@ int	pos;
 
 /* Clear out the guess block marking all character positions as unknown.
  */
+void
 gbsclear(gbs)
 gwindow	*gbs;
 {

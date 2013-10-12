@@ -12,6 +12,7 @@
 #include	"window.h"
 #include	"specs.h"
 #include	"cipher.h"
+#include	"terminal.h"
 
 
 #define STANDALONE	FALSE
@@ -104,9 +105,14 @@ float	score2_mean, score2_var, score2_sd, score2_scale;
 float	score1_mean, score1_var, score1_sd, score1_scale;
 
 
+/* Forward declarations */
+void stats2(void);
+void load_2stats(FILE *inp);
+void print_stat_tab(FILE *out, float table[], int maxindex);
+
 #if STANDALONE
 #define	filename		"/usr/baldwin/Ecrypt/mss-bigram.stats"
-main()
+void main(void)
 {
 	FILE	*inp;
 
@@ -155,7 +161,6 @@ int		pblock[];
 float	pvec_1score(pvec)
 int	*pvec;
 {
-	int		i;
 	int		c;
 	float	tmp, sum, count, score;
 
@@ -168,7 +173,7 @@ int	*pvec;
 	while (*pvec != NONE)  {
 		count += 1.0;
 		c = *pvec++;
-		if (c != c & CHARMASK)  return(-1.0);
+		if (c != (c & CHARMASK))  return(-1.0);
 		tmp = logprob[c & CHARMASK];
 		if (tmp == 0.0)  return(-1.0);
 		sum += tmp;
@@ -197,7 +202,6 @@ int	*pvec;
 float	var_1score(pvec)
 int	*pvec;
 {
-	int		i;
 	int		c;
 	float	tmp, sum, count, score;
 
@@ -210,7 +214,7 @@ int	*pvec;
 	while (*pvec != NONE)  {
 		count += 1.0;
 		c = *pvec++;
-		if (c != c & CHARMASK)  return(0.0);
+		if (c != (c & CHARMASK))  return(0.0);
 		tmp = logprob[c & CHARMASK];
 		if (tmp == 0.0)  return(0.0);
 		tmp = tmp - logmean;
@@ -233,9 +237,8 @@ int	*pvec;
 float	prob_1score(pvec)
 int	*pvec;
 {
-	int		i;
 	int		c;
-	float	tmp, product, count, score;
+	float	product, count, score;
 
 	if (!stats1loaded)  {
 		load_1stats_from(letterstats);
@@ -246,7 +249,7 @@ int	*pvec;
 	while (*pvec != NONE)  {
 		count += 1.0;
 		c = *pvec++;
-		if (c != c & CHARMASK)  return(0.0);
+		if (c != (c & CHARMASK))  return(0.0);
 		product *= prob[c] * count;
 		}
 
@@ -435,7 +438,7 @@ int		maxindex;
  * <Blankline>
  * <EOF>
  */
-load_1stats(inp)
+void load_1stats(inp)
 FILE	*inp;
 {
 	int		i,n;
@@ -500,7 +503,7 @@ FILE	*inp;
 
 /* Load the letter pair statistics from the given file name.
  */
-load_2stats_from(statfname)
+void load_2stats_from(statfname)
 char	*statfname;		/* Full path name of file with statistics. */
 {
 	FILE	*inp;
@@ -547,8 +550,7 @@ char	*statfname;		/* Full path name of file with statistics. */
  * For example if 'T' and 't' are treated the same, a double letter entry
  * might look like: "1247 TT" and count for Tt, tT, tt, and TT.
  */
-load_2stats(inp)
-FILE	*inp;
+void load_2stats(FILE *inp)
 {
 register	int		i,j;
     int		n;
@@ -557,7 +559,6 @@ register	int		i,j;
 	int		left_index, right_index;
 	float	v, lv, fv;
 	float	etotal, ctotal;
-	char	linebuf[300];
 
 	stats2loaded = TRUE;
 	nbichars = 0;
@@ -691,7 +692,7 @@ register	int		i,j;
  * Uses the globals: biprob[][], sllogbiprob[], and bilogprob[][].
  * Sets gobals: score2_mean, score2_var, score2_sd.
  */
-stats2()
+void stats2(void)
 {
 register	int	i,j,k;
 	float	mean, var;
@@ -723,13 +724,11 @@ register	int	i,j,k;
 
 /* Print the bigram statistics.
  */
-print_2stats(out)
+void print_2stats(out)
 FILE	*out;
 {
 	float	sllog_mean;
 	float	sllog_var;
-	float	lev_mean, lev_var;
-	float	rev_mean, rev_var;
 
 	fprintf(out, "\t\tBigram Statistics\n");
 	fprintf(out, "Score2_mean is %f", score2_mean);
@@ -749,7 +748,7 @@ FILE	*out;
 
 /* Print the first order log statistics on a stream.
  */
-print_1stats(out)
+void print_1stats(out)
 FILE	*out;
 {
 
@@ -767,10 +766,7 @@ FILE	*out;
 
 /* Dumpa statistics table on to a stream.
  */
-print_stat_tab(out, table, maxindex)
-FILE	*out;
-float	table[];
-int		maxindex;
+void print_stat_tab(FILE *out, float table[], int maxindex)
 {
 	int		i;
 
@@ -784,7 +780,7 @@ int		maxindex;
 
 /* Load the first order statistics from the given file name.
  */
-load_1stats_from(statfname)
+void load_1stats_from(statfname)
 char	*statfname;
 {
 	FILE	*inp;

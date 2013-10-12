@@ -51,7 +51,6 @@ twindow		banner = {
 gwindow *(ibanner())
 {
 	displine	*line;
-	int			i;
 
 	line = banner.dlines[0];
 	clrdline(line);

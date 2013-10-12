@@ -28,7 +28,7 @@ extern	key		u_getkey();
 /* This is the main loop that runs the window system.
  * It returns if the cursor is not in any of the windows in wtab.
  */
-wl_driver(wtab)
+void wl_driver(wtab)
 gwindow		*wtab[];		/* Ptr to null terminated list of windows. */
 {
 gwindow		**pw, *w;
@@ -62,7 +62,7 @@ while (TRUE)  {
 /* Refresh all windows.
  * Do not move the cursor.
  */
-wl_refresh(wtab)
+void wl_refresh(wtab)
 gwindow		*wtab[];		/* Ptr to null terminated list of windows. */
 {
 	gwindow		**pw, *w;
@@ -85,7 +85,7 @@ gwindow		*wtab[];		/* Ptr to null terminated list of windows. */
  * Can also be used to set the cursor by first setting the cursor coords
  * in the window data structure.
  */
-wl_rcursor(w)
+int wl_rcursor(w)
 gwindow	*w;			/* Pointer to basic window data. */
 {
 	int	grow,gcol;	/* Global cursor locations. */
@@ -94,6 +94,8 @@ gwindow	*w;			/* Pointer to basic window data. */
 	gcol = w->wcur_col + w->worg_col - 1;
 	setcursor(grow,gcol);
 	if (!wl_hascur(w))  disperr("wl_rcursor arguments out-of-bounds.");
+
+	return 0;
 }
 
 
@@ -102,7 +104,7 @@ gwindow	*w;			/* Pointer to basic window data. */
  * That is, set it relative to the window's origin.
  * It displays an error if the cursor leaves the window.
  */
-wl_setcur(w, row, col)
+int wl_setcur(w, row, col)
 gwindow	*w;			/* Pointer to basic window data. */
 int		row, col;	/* Local coordinates. */
 {
@@ -114,20 +116,23 @@ int		row, col;	/* Local coordinates. */
 	gcol = w->worg_col + col - 1;
 	setcursor(grow,gcol);
 	if (!wl_hascur(w))  disperr("wl_setcur arguments out-of-bounds.");
+
+	return 0;
 }
 
 
 /* No-op window routine.
  */
-wl_noop()
+int wl_noop(void)
 {
+  return 0;
 }
 
 
 
 /* Return TRUE if the cursor is in the given window.
  */
-wl_hascur(w)
+int wl_hascur(w)
 gwindow		*w;
 {
 	int		grow, gcol;		/* Global cursor location. */
@@ -147,7 +152,7 @@ gwindow		*w;
 
 /* Generic draw routine.
  */
-wl_draw(w)
+void wl_draw(w)
 gwindow	*w;
 {
 	(*(w->wredraw))(w);
@@ -157,7 +162,7 @@ gwindow	*w;
 /* Redraw routine that can be used with any twindow.
  * Leaves cursor on the last display line.
  */
-wl_twdraw(w)
+int wl_twdraw(w)
 twindow	*w;
 {
 	displine	**lines, *line;
@@ -165,13 +170,15 @@ twindow	*w;
 	for (lines = w->dlines ; (line = *lines) != NULL ; lines++)  {
 		(*(line->wredraw))(line);
 		}
+
+	return 0;
 }
 
 
 /* Erase the window by putting spaces of all of it.
  * Leave the cursor at the window's origin.
  */
-wl_erase(w)
+void wl_erase(w)
 gwindow	*w;
 {
 	int	grow, gcol;		/* Global row and column locations. */
@@ -191,7 +198,7 @@ gwindow	*w;
 /* Outline a window without changing its inside.
  * Leave cursor at the origin.
  */
-wl_outline(w)
+int wl_outline(w)
 gwindow	*w;
 {
 	int	grow, gcol;		/* Global row and column locations. */
@@ -212,4 +219,6 @@ gwindow	*w;
 	grow = w->worg_row + w->wcur_row - 1;
 	gcol = w->worg_col + w->wcur_col - 1;
 	setcursor(grow, gcol);
+
+	return 0;
 }

@@ -20,8 +20,10 @@
 #define	TOPINDEX	2
 #define	BOTINDEX	(WEBHEIGHT-2)
 
-extern	int	wordsim();	/* Defined below. */
-extern		web_first();	/* Defined below. */
+/* Forward declarations */
+int wordsim();
+int web_first();
+void webgraphics();
 
 /* Strings for outlining the window.
  */
@@ -91,7 +93,7 @@ gwindow *(iwebster())
 /* Convert a default graphic chars to fancy graphics chars
  * in the given string.
  */
-webgraphics(str)
+void webgraphics(str)
 char	*str;
 {
 	for ( ; *str != 0; str++)  {
@@ -121,7 +123,7 @@ char	*str;
 char *webmatch(args)
 char	*args;
 {
-	char	*p, *w;		/* Pattern and word pointers. */
+	char	*w;		/* Pattern and word pointers. */
 	char	patbuf[MAXWIDTH+1];
 	char	wordbuf[MAXWIDTH+1];
 	int	i;
@@ -192,7 +194,7 @@ int	wordsim(pattern, word)
 char	*pattern;
 char	*word;
 {
-	for ( ; *pattern != 0 && *word != 0 ; ((int)pattern++)|((int)word++)) {
+  for ( ; *pattern != 0 && *word != 0 ; pattern++, word++) {
 		if (*word == '\n')
 		  	return(FALSE);
 		if (*pattern == '.')
@@ -209,10 +211,12 @@ char	*word;
 /* Called when cursor enters the window.
  * Clears the help message and accepts the cursor position.
  */
-web_first(w, row, col)
+int web_first(w, row, col)
 gwindow	*w;
 int		row, col;
 {
 	wl_setcur(w, row, col);
 	usrhelp(&user, WEBHELP);
+
+	return 0;
 }

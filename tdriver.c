@@ -11,9 +11,8 @@
 
 
 extern	char	*atr_best();
-extern			atr_autoguess();
+extern	void	atr_autoguess();
 extern	float	atr_score();
-extern	int		accept_permvec();
 
 atrinfo	myatrinfo;
 char	plainbuf[BLOCKSIZE+1];
@@ -22,7 +21,7 @@ int		naccepted, nwrong, nright;		/* Number of wires accepted / wrong. */
 extern	char	mcbuf[];
 
 /* Test routine for automated trigram guessing. */
-main(argc, argv)
+int main(argc, argv)
 int		argc;
 char	*argv[];
 {
@@ -116,10 +115,12 @@ char	*argv[];
 		}
 
 	permsave();
+
+	return 0;
 }
 
 
-do_block(blknum, cfile, pfile, atri)
+void do_block(blknum, cfile, pfile, atri)
 int		blknum;
 char	*cfile, *pfile;
 atrinfo	*atri;
@@ -214,7 +215,7 @@ atrinfo	*atri;
 
 /* Look for best trigram at given position.
  */
-trytri(atri, pos, tindex)
+void trytri(atri, pos, tindex)
 atrinfo	*atri;
 int		pos;
 int		tindex;

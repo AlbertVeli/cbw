@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
+#include <curses.h>
+#include <term.h>
 #include "window.h"
 #include "terminal.h"
 #include "specs.h"
@@ -61,7 +63,7 @@ int	MXCOL = MAXWIDTH;	    /* Max column number */
 /* Clear Screen.  This should be the first screen operation called in order
  * to initialize the line and column locations.
  */
-clrscreen()
+void clrscreen(void)
 {
 	enter_mode(SMNORMAL);
 	Puts(erase_scr);			    /* clear the screen */
@@ -77,7 +79,7 @@ clrscreen()
  * from 1..24 and 1..80, rather than 0..23 and 0..79. So this
  * routine subtracs one before it calls the curses routine.
  */
-setcursor(line, column)
+void setcursor(line, column)
 int	line, column;		/* ranges: 1..24 and 1..80 inclusive */
 {
 	if (line < 1 || line > MXLINE  ||  column < 1 || column > MXCOL)  {
@@ -95,7 +97,7 @@ int	line, column;		/* ranges: 1..24 and 1..80 inclusive */
 
 /* Return the row location of the cursor (1 is in upper-left corner).
  */
-rowcursor()
+int rowcursor(void)
 {
 	return(cline);
 }
@@ -103,7 +105,7 @@ rowcursor()
 
 /* Return the row location of the cursor (1 is in upper-left corner).
  */
-colcursor()
+int colcursor(void)
 {
 	return(ccolumn);
 }
@@ -113,7 +115,7 @@ colcursor()
 /* Get Cursor Position
  * The value returned equals 256*LineNumber + ColumnNumber
  */
-int	getcursor()
+int getcursor(void)
 {
 	return((cline<<8)+ccolumn);
 }
@@ -126,7 +128,7 @@ int	getcursor()
  */
 /* of course, there is a more ellegant way to implement this */
 
-jogcursor(dir)
+void jogcursor(dir)
 int	dir;
 {
 	switch(dir) {
@@ -152,7 +154,7 @@ int	dir;
  * edge of the screen in which case the cursor stays pinned to the
  * edge and doesn't move beyond it.
  */
-plstring(s)
+void plstring(s)
 char	*s;
 {
 	for ( ; *s != 0; s++)  {
@@ -168,7 +170,7 @@ char	*s;
  * This routine can also be used to erase characters on the screen by
  * overwriting them with spaces.
  */
-plnspaces(n)
+void plnspaces(n)
 int	n;
 {	int	i;
 	if (n < 0)  {
@@ -187,7 +189,7 @@ int	n;
 
 /* Place a Number of a given Character
  */
-plnchars(n, c)
+void plnchars(n, c)
 int	n;
 int	c;
 {	
@@ -214,7 +216,7 @@ int	c;
  * placed on the screen.  However the cursor will not move below
  * the last line on the screen.
  */
-vertnchars(n,c)
+void vertnchars(n,c)
 int	n;
 int	c;
 {
@@ -238,7 +240,7 @@ int	c;
 
 /* Delete characters after the cursor up until the End Of the Line
  */
-deleol()
+void deleol(void)
 {
 	Puts(erase_eol);
 }
@@ -246,7 +248,7 @@ deleol()
 
 /* Delete characters after the cursor up until the End Of the Screen
  */
-deleos()
+void deleos(void)
 {
 	Puts(erase_eos);
 }
@@ -255,7 +257,7 @@ deleos()
 /* Display Error message.  The message is a string that does not end
  * with a \n.
  */
-disperr(s)
+void disperr(s)
 char	*s;
 {	int	sline, scolumn;		/* Saved line and column numbers. */
 
@@ -270,7 +272,7 @@ char	*s;
 
 /* Put a string to stdout without trailing newline.
  */
-Puts(s)
+void Puts(s)
 char *s;
 {
 	while(*s)

@@ -18,16 +18,19 @@
  * That is, an all blank line has a length of zero.
  */
 
+
+/* Forward declarations */
+void dlright(displine *dline);
+
+
 /* INTERNAL PROCEDURES */
+
 
 /* Set the range of positions between firstcol and lastcol (inclusive) to
  * the given string.  The string is padded on the right with spaces
  * or truncated to make it fill the interval.
  */
-setarange(line, str, firstcol, lastcol)
-displine	*line;
-char		*str;
-int			firstcol, lastcol;
+void setarange(displine *line, char *str, int firstcol, int lastcol)
 {
 	int		i;
 
@@ -56,10 +59,7 @@ int			firstcol, lastcol;
  * This cannot be used to initialize a display line.  It does not
  * set the character preceeding col.
  */
-setnadline(line, str, col)
-displine	*line;
-char		*str;
-int			col;
+void setnadline(displine *line, char *str, int col)
 {
 	setarange(line, str, col, line->wwidth);
 }
@@ -67,8 +67,7 @@ int			col;
 
 /* Blank out all the characters in a displine.
  */
-clrdline(line)
-displine	*line;
+void clrdline(displine *line)
 {
 	line->dl_length = 0;
 	setarange(line, "", 1, line->wwidth);
@@ -79,9 +78,7 @@ displine	*line;
  * This fills in the null termination, so it can be used to initialize
  * a display line.
  */
-setadline(line, str)
-displine	*line;
-char		*str;
+void setadline(displine *line, char *str)
 {
 	line->dl_length = 0;
 	setarange(line, str, 1, line->wwidth);
@@ -92,10 +89,7 @@ char		*str;
  * if necessary.  Do not pad with blanks, just avoid overflowing
  * the range.
  */
-setrange(line, str, firstcol, lastcol)
-displine	*line;
-char		*str;
-int			firstcol, lastcol;		/* Inclusive interval. */
+void setrange(displine *line, char *str, int firstcol, int lastcol)
 {
 	int		i;
 	int		newlength;
@@ -120,10 +114,7 @@ int			firstcol, lastcol;		/* Inclusive interval. */
  * This cannot be used to initialize a line, since it does not set the
  * characters before column col.
  */
-setndline(line, str, col)
-displine	*line;
-char		*str;
-int			col;
+void setndline(displine *line, char *str, int col)
 {
 	setrange(line, str, col, line->wwidth);
 }
@@ -132,9 +123,7 @@ int			col;
 /* Set the variable part of the line (between min and max_col) to
  * the given string.  Pad with blanks.
  */
-dlsetvar(line, str)
-displine	*line;
-char		*str;
+void dlsetvar(displine *line, char *str)
 {
 	setarange(line, str, line->dl_min_col, line->dl_max_col);
 }
@@ -144,10 +133,7 @@ char		*str;
 /* Fill the given buffer from the given range of column positions.
  * Trailing blanks are not removed.
  */
-getrange(line, buf, firstcol, lastcol)
-displine	*line;
-char		*buf;
-int			firstcol, lastcol;
+void getrange(displine *line, char *buf, int firstcol, int lastcol)
 {
 	int		i;
 
@@ -162,9 +148,7 @@ int			firstcol, lastcol;
  * corresponding to the part of the dline between the min and max
  * column positions.  Trailing blanks are not removed.
  */
-dlgetvar(line, buf)
-displine	*line;
-char		*buf;
+void dlgetvar(displine *line, char *buf)
 {
 	getrange(line, buf, line->dl_min_col, line->dl_max_col);
 }
@@ -180,9 +164,7 @@ char		*buf;
  * The cursor moves to the right one column, provided it doesn't
  * move past dl_max_col.
  */
-dlinsert(line, k)
-displine	*line;
-key			k;
+void dlinsert(displine *line, key k)
 {
 	char	restbuf[MAXWIDTH+1];		/* Char from cursor to end. */
 	char	insbuf[2];					/* Char to insert. */
@@ -207,8 +189,7 @@ key			k;
  * The cursor doesn't move.
  * The non-blank length is correctly maintained.
  */
-dldelete(line)
-displine	*line;
+void dldelete(displine *line)
 {
 	char	*p;
 	char	linebuf[MAXWIDTH+1];		/* Rebuild whole line here. */
@@ -224,8 +205,7 @@ displine	*line;
 
 /* Move the cursor right within min and max column.
  */
-dlright(line)
-displine	*line;
+void dlright(displine *line)
 {
 	if (line->wcur_col+1 <= line->dl_max_col)
 		line->wcur_col++;
@@ -234,8 +214,7 @@ displine	*line;
 
 /* Move the cursor left within min and max column.
  */
-dlleft(line)
-displine	*line;
+void dlleft(displine *line)
 {
 	if (line->wcur_col-1 >= line->dl_min_col)
 		line->wcur_col--;
@@ -248,8 +227,7 @@ displine	*line;
 
 /* Redraw routine for a display line.
  */
-wl_dldraw(dline)
-displine	*dline;
+int wl_dldraw(displine *dline)
 {
 	int		oldcolumn;
 
@@ -258,14 +236,14 @@ displine	*dline;
 	wl_setcur(dline, 1, 1);
 	plstring(dline->dl_chars);
 	wl_setcur(dline, 1, oldcolumn);
+
+	return 0;
 }
 
 
 /* Insert a character an redisplay the line.
  */
-wl_dlinsert(line, k)
-displine	*line;
-key			k;
+void wl_dlinsert(displine *line, key k)
 {
 	dlinsert(line, k);
 	wl_dldraw(line);
@@ -274,11 +252,9 @@ key			k;
 
 /* Delete the current character an redisplay the line.
  */
-wl_dlfdel(line, k)
-displine	*line;
-key			k;
+void wl_dlfdel(displine *line)
 {
-	dldelete(line, k);
+	dldelete(line);
 	wl_dldraw(line);
 }
 
@@ -286,22 +262,19 @@ key			k;
 /* Delete the previous character an redisplay the line.
  * The cursor moves backwards one position.
  */
-wl_dlbdel(line, k)
-displine	*line;
-key			k;
+void wl_dlbdel(displine *line)
 {
 	if (line->wcur_col == line->dl_min_col)  return;
 
 	dlleft(line);
-	dldelete(line, k);
+	dldelete(line);
 	wl_dldraw(line);
 }
 
 
 /* Move cursor right and update display.
  */
-wl_dlright(line)
-displine	*line;
+void wl_dlright(displine *line)
 {
 	dlright(line);
 	wl_rcursor(line);
@@ -310,8 +283,7 @@ displine	*line;
 
 /* Move cursor left and update display.
  */
-wl_dlleft(line)
-displine	*line;
+void wl_dlleft(displine *line)
 {
 	dlleft(line);
 	wl_rcursor(line);
@@ -320,8 +292,7 @@ displine	*line;
 
 /* Clear the variable part of the display line and update the display.
  */
-wl_dlclr(line)
-displine	*line;
+void wl_dlclr(displine *line)
 {
 	dlsetvar(line, "");
 	line->wcur_col = line->dl_min_col;
@@ -333,8 +304,7 @@ displine	*line;
  * position the cursor there, and delete it.
  * Do nothing if the line doesn't contain a '%'.
  */
-wl_nxtarg(line)
-displine	*line;
+void wl_nxtarg(displine *line)
 {
 	int		i;
 
