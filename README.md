@@ -8,4 +8,13 @@ CBW is an interactive multi-window system for mounting a cipher-text only attack
 
 This git repository is not meant to improve upon cbw, only make it compile on modern UNIX-like systems, like OS X, FreeBSD and GNU/Linux.
 
-Current status: Not compiling. You are welcome to help out ;-)
+Current status: Compiling but crashing. You are welcome to help out ;-)
+
+Notes from ebfe (Michael Gehring):
+
+    echo "foobar" > data.cipher
+    LETTERSTATS=mss.stats BIGRAMSTATS=mss-bigram.stats TRIGRAMSTATS=trigrams.stats ./cbw data
+
+    starts up fine, though the terminal is mostly non-functional.
+
+For me it is not only non-functional, but actually crashing and core dumping. I am looking into it right now.
