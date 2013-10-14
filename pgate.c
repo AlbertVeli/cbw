@@ -17,15 +17,13 @@ extern	int	kzeeinv[];
 /* User command to propage info from Ai to Aj using Zee**(j-i).
  * Returns NULL if sucessful.
  */
-char *pgate(str)
-char	*str;
+char *pgate(char *str)
 {
-	FILE	*fd;
 	int		i;
 	int		k;
 	int		from, to;
 	int		*zeek, *zeeinvk;	/* Zee ** k */
-	int		*fromperm, *tmp1perm, *tmp2perm;
+	int		*tmp1perm, *tmp2perm;
 	int		kexp[BLOCKSIZE+1], kexpinv[BLOCKSIZE+1];
 	int		ktmp1perm[BLOCKSIZE+1];
 	int		ktmp2perm[BLOCKSIZE+1];

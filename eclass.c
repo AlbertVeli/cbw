@@ -158,9 +158,7 @@ void ecbundo(gwindow *ecb)
 
 /* Dump plaintext chars onto stream.
  */
-void ec_dplain(out, eci)
-FILE	*out;
-ecinfo	*eci;
+void ec_dplain(FILE *out, ecinfo *eci)
 {
 	int		i,c;
 	int		*pbuf;

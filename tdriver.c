@@ -3,6 +3,7 @@
  */
 
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<math.h>
 #include	"window.h"
 #include	"specs.h"
@@ -13,6 +14,12 @@
 extern	char	*atr_best();
 extern	void	atr_autoguess();
 extern	float	atr_score();
+extern void ec_autoguess(ecinfo *ecbi, float alevel);
+extern void ec_dplain(FILE *out, ecinfo *eci);
+
+/* Forward declarations */
+void do_block(int blknum, char *cfile, char *pfile, atrinfo *atri);
+int wrong_guess(char *plaintext, int position, char *trigram);
 
 atrinfo	myatrinfo;
 char	plainbuf[BLOCKSIZE+1];
@@ -47,24 +54,24 @@ char	*argv[];
 
 	p = cipherfile = cipherfbuf;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = code;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	p = plainfbuf;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = plain;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	p = permfile = permfbuf;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = perm;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	atri = &myatrinfo;
 
@@ -120,22 +127,18 @@ char	*argv[];
 }
 
 
-void do_block(blknum, cfile, pfile, atri)
-int		blknum;
-char	*cfile, *pfile;
-atrinfo	*atri;
+void do_block(int blknum, char *cfile, char *pfile, atrinfo *atri)
 {
-	int		i,c,x,y;
-	int		j;
+	int		i,y;
 	int		pos;
 	char	*trigram;
 	int		charcount;				/* Number of characters deduced. */
-	float	score;
 	int		*dbsperm;
+/*
 	perment	permvector[PERMSZ];
 	int		pvec[BLOCKSIZE+1];
 	char	str[BLOCKSIZE+1];
-
+*/
 	cipherfile = pfile;
 	fillcbuf(blknum, plainbuf);
 	cipherfile = cfile;
@@ -215,16 +218,13 @@ atrinfo	*atri;
 
 /* Look for best trigram at given position.
  */
-void trytri(atri, pos, tindex)
-atrinfo	*atri;
-int		pos;
-int		tindex;
+#if 0
+void trytri(atrinfo *atri, int pos, int tindex)
 {
-	int		i;
-	int		j, x, y;
+  /*
 	char	*trigram;
 	char	str[BLOCKSIZE+1];
-
+  */
 /*
 	trigram = atr_best(atri, pos, min_score);
 
@@ -240,14 +240,11 @@ int		tindex;
 		}
 */
 }
-
+#endif
 
 /* Return TRUE if the guess is wrong.
  */
-int	wrong_guess(plaintext, position, trigram)
-char	*plaintext;
-int		position;
-char	*trigram;
+int wrong_guess(char *plaintext, int position, char *trigram)
 {
 	char	*guess, *reality;
 
@@ -263,15 +260,15 @@ char	*trigram;
 
 
 
-key	u_getkey()
+key u_getkey(void)
 {
+	return 0;
 }
 
 keyer	topktab[] ={{0, NULL}};
 
 
-char *quitcmd(arg)
-char	*arg;
+char *quitcmd(char *arg __attribute__((unused)))
 {
 	printf("\n");
 	exit(1);

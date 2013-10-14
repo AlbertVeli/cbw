@@ -7,12 +7,18 @@
 
 
 #include	<stdio.h>
+#include	<stdlib.h>
 
 
 #define	BLOCKSIZE	256
 #define	MODMASK		(BLOCKSIZE-1)
 #define	FALSE		0
 #define	TRUE		1
+
+/* Forward declarations */
+void readblock(FILE *fd, int buf[]);
+int doblock(int p[]);
+void pgate(int *inperm, int *outperm, int *z, int *zi);
 
 
 /* Global state. */
@@ -31,7 +37,6 @@ char	*permfile = "zeecode.perm";
 int main(void)
 {
 	int	i;
-	int	*curperm;
 	FILE *fd;
 
 	if ((fd = fopen(permfile, "r")) == NULL)  {
@@ -57,11 +62,7 @@ int main(void)
 /* Compute the permutation after inperm using z and its inverse zi.
  * The result is placed in outperm.
  */
-void pgate(inperm, outperm, z, zi)
-int	*inperm;
-int	*outperm;
-int	*z;
-int	*zi;
+void pgate(int *inperm, int *outperm, int *z, int *zi)
 {
 	int		i,x,v;
 	int		w;
@@ -83,8 +84,7 @@ int	*zi;
  * and write them to stdout.
  * Return FALSE if reach end of file.
  */
-void doblock(p)
-int	p[];
+int doblock(int p[])
 {
 	int		pos;
 	int		sc;
@@ -104,9 +104,7 @@ int	p[];
  * the given stream.
  * The block is terminated by a newline character.
  */
-void readblock(fd, buf)
-FILE	*fd;
-int		buf[];
+void readblock(FILE *fd, int buf[])
 {
 	int	i;
 

@@ -10,9 +10,6 @@
 #include	"window.h"
 #include	"specs.h"
 
-
-#define STANDALONE	FALSE
-
 #define	NFEXP		100		/* Number of entries in fexp_value table. */
 #define	DXFEXP		0.05	/* Interval width in fexp table. */
 #define	MAXFEXP		(NFEXP * DXFEXP)	/* Max value < this */
@@ -20,6 +17,7 @@
 /* Forward declarations */
 void sqrt_tab(void);
 void fexp_tab(void);
+void approx_init(void);
 
 /* Table of values for exp(-(x*x)/2) starting with zero at intervals of 0.1
  * The values of the derivative of exp(-(x*x)/2) are in fexp_deriv.
@@ -33,7 +31,7 @@ float	fexp_deriv[NFEXP];
 float	isqrt[BLOCKSIZE];
 
 
-#if STANDALONE
+#ifdef APPROX_STANDALONE
 int main(void)
 {
 	int		i;
@@ -43,7 +41,7 @@ int main(void)
 	printf("\nX\t\treal\t\tapprox");
 	printf("\n\n");
 
-	approx_init(void);
+	approx_init();
 
 	for (i = 0 ; i < (NFEXP + 5) ; i++)  {
 		fi = i;

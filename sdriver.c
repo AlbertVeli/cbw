@@ -3,29 +3,29 @@
  */
 
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<math.h>
 #include	"window.h"
+#include	"terminal.h"
 #include	"specs.h"
 #include	"cipher.h"
 
 
-extern	void str2gsi();
+void str2gsi(char *str, gsinfo *gsi);
+void stripdots(char *in, char *out);
 
 gsinfo	mygsi;
 int		kwnbuf[100], gssbuf[100];
 
 /* Test routine for statistics. */
-int main(argc, argv)
-int		argc;
-char	*argv[];
+int main(void)
 {
 	char	*p;
-	int		c, i;
-	float	h;
+	int	c;
 	char	plainbuf[BLOCKSIZE+1];
-	int		pvec[BLOCKSIZE+1];
-	float	pscore, fscore;
-	int		length;
+	int	pvec[BLOCKSIZE+1];
+	float	pscore;
+	int	length;
 	gsinfo	*gsi;
 	char	str[100];
 
@@ -43,7 +43,7 @@ char	*argv[];
 		for (p = plainbuf ; (c=read_char(stdin)) != EOL ; *p++ = c )  {
 			length++;
 			}
-		*p = NULL;
+		*p = 0;
 
 		stripdots(plainbuf, str);
 		str2pvec(str, pvec);
@@ -58,9 +58,10 @@ char	*argv[];
 */
 
 		str2gsi(plainbuf, gsi);
+/*
 		pscore = gsi_score(gsi);
 		printf(", and gsi_score is %5.3f", pscore);
-
+*/
 		printf("\n");
 		}
 
@@ -71,15 +72,13 @@ char	*argv[];
 /* Fill in guess info block from string.  Treat all chars as
  * consecutive, except "." means unknown.
  */
-void str2gsi(str, gsi)
-char	*str;
-gsinfo	*gsi;
+void str2gsi(char *str, gsinfo *gsi)
 {
 	int		cpos_index, guessed_index;
 
 	cpos_index = 0;
 	guessed_index = 0;
-	while (*str != NULL)  {
+	while (*str)  {
 		if (*str == '.')  {
 			(gsi->cguessed)[guessed_index] = NONE;
 			}
@@ -99,21 +98,21 @@ gsinfo	*gsi;
 
 /* Copy in to out deleting the character "."
  */
-void stripdots(in, out)
-char	*in, *out;		/* Null terminated strings. */
+void stripdots(char *in, char *out)
 {
-	while (*in != NULL)  {
+	while (*in)  {
 		if (*in != '.')
 			*out++ = *in++;
 		else
 			in++;
 		}
-	*out = NULL;
+	*out = 0;
 }
 
 
-key	u_getkey()
+key u_getkey(void)
 {
+	return 0;
 }
 
 keyer	topktab[] ={{0, NULL}};

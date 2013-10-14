@@ -3,6 +3,7 @@
  */
 
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<math.h>
 #include	"window.h"
 #include	"specs.h"
@@ -14,7 +15,7 @@ ecinfo	myecinfo;
 char	plainbuf[BLOCKSIZE+1];
 float	accept_level;
 
-extern	void ec_best();
+extern	int ec_best();
 extern	void ec_dplain();
 extern	void ec_dscipher();
 extern	void ec_dnext();
@@ -22,8 +23,10 @@ extern	void ec_dsizetab();
 extern	void ec_dperm();
 extern	void ec_dpmap();
 extern	void ec_init();
-extern	void ec_best();
 extern	void ec_cscore();
+
+/* Forward declarations */
+void do_block(ecinfo *eci, int blknum, char *cipherfile, char *plainfile);
 
 extern	char	mcbuf[];
 extern	char	*fname;			/* Used by fillcbuf. */
@@ -34,8 +37,8 @@ char	*argv[];
 {
 	ecinfo	*eci;
 	FILE	*inp;
-	int		i, blknum;
-	int		maxblock;
+	int	blknum;
+	int	maxblock;
 	long	filelength;
 	char	infile[100];
 	char	inplain[100];
@@ -50,17 +53,17 @@ char	*argv[];
 
 	p = inplain;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = plain;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	p = infile;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = code;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	if (sscanf(argv[2], "%f", &accept_level) != 1)  {
 		printf("Could not parse the acceptance level from %s.\n", argv[2]);
@@ -91,10 +94,7 @@ char	*argv[];
 }
 
 
-void do_block(eci, blknum, cipherfile, plainfile)
-ecinfo	*eci;
-int		blknum;
-char	*cipherfile, *plainfile;
+void do_block(ecinfo *eci, int blknum, char *cipherfile, char *plainfile)
 {
 	int		i,c,x,y;
 	int		naccepted, nwrong;
@@ -150,11 +150,12 @@ char	*cipherfile, *plainfile;
 	printf("\n\nPlaintext for block %d using %d wires", blknum, naccepted);
 	printf(" (%d wrong)", nwrong);
 	printf(" yields %d characters.\n\n", charcount);
-	ec_dplain(stdout, eci);
+ 	ec_dplain(stdout, eci);
 }
 
-key	u_getkey()
+key u_getkey(void)
 {
+ 	return 0;
 }
 
 keyer	topktab[] ={{0, NULL}};

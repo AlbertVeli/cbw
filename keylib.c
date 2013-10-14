@@ -27,9 +27,7 @@ keyer	arwktab[]	=	{
  * If the cursor is still in the window, they update the
  * cursor location in the window's data structure.
  */
-void jogup(w,k)
-gwindow	*w;
-key		k;
+void jogup(gwindow *w, key k __attribute__((unused)))
 {
 	if (w->wcur_row > 1) {
 		w->wcur_row--;
@@ -37,9 +35,7 @@ key		k;
 	jogcursor(1);
 }
 
-void jogdown(w,k)
-gwindow	*w;
-key		k;
+void jogdown(gwindow *w, key k __attribute__((unused)))
 {
 	if (w->wcur_row < w->wheight) {
 		w->wcur_row++;
@@ -47,9 +43,7 @@ key		k;
 	jogcursor(2);
 }
 
-void jogleft(w,k)
-gwindow	*w;
-key		k;
+void jogleft(gwindow *w, key k __attribute__((unused)))
 {
 	if (w->wcur_col > 1) {
 		w->wcur_col--;
@@ -57,9 +51,7 @@ key		k;
 	jogcursor(3);
 }
 
-void jogright(w,k)
-gwindow	*w;
-key		k;
+void jogright(gwindow *w, key k __attribute__((unused)))
 {
 	if (w->wcur_col < w->wwidth) {
 		w->wcur_col++;
@@ -77,10 +69,7 @@ key		k;
  * If it is -1, the proc in that entry will be called with the key,
  * and TRUE is returned.  If it is 0, the no-match status is returned.
  */
-int ddokey(w, k, ktab)
-gwindow	*w;		/* Window */
-key	k;		/* Key to handle */
-keyer	*ktab;		/* Table of handling procedures */
+int ddokey(gwindow *w, key k, keyer *ktab)
 {
 	int	cmd;
 
@@ -99,9 +88,7 @@ keyer	*ktab;		/* Table of handling procedures */
 
 /* Lookup and call a keyproc in the window's key handling table.
  */
-int dokey(w, k)
-gwindow		*w;
-key			k;
+int dokey(gwindow *w, key k)
 {
 	return(ddokey(w, k, w->wkeyprocs));
 }

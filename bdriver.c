@@ -3,6 +3,7 @@
  */
 
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<math.h>
 #include	"window.h"
 #include	"specs.h"
@@ -18,7 +19,7 @@ char	plainbuf[BLOCKSIZE+1];
 float	accept_level;
 float	prob_cutoff;
 
-extern	void ec_best();
+extern	int ec_best();
 extern	void ec_dplain();
 extern	void ec_dscipher();
 extern	void ec_dnext();
@@ -26,17 +27,19 @@ extern	void ec_dsizetab();
 extern	void ec_dperm();
 extern	void ec_dpmap();
 extern	void ec_init();
-extern	void ec_best();
 extern	void ec_cscore();
 extern	void lp_init();
-extern	void lp_best_char();
+extern	int lp_best_char();
 extern	void lp_cscore();
 extern	void lp_accept();
-extern	void lp_best_pos();
+extern	int lp_best_pos();
 extern	void lp_dclasses();
 
 extern	char	mcbuf[];
 extern	char	*fname;			/* Used by fillcbuf. */
+
+void do_lp_block();
+
 /* Test routine for equiv class info. */
 int main(argc, argv)
 int		argc;
@@ -45,8 +48,8 @@ char	*argv[];
 	ecinfo	*eci;
 	FILE	*inp;
 	FILE	*sout, *sin;
-	int		i, blknum;
-	int		maxblock;
+	int	blknum;
+	int	maxblock;
 	long	filelength;
 	char	infile[100];
 	char	inplain[100];
@@ -65,17 +68,17 @@ char	*argv[];
 
 	p = inplain;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = plain;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	p = infile;
 	q = argv[1];
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 	--p;
 	q = code;
-	while (*p++ = *q++);
+	while ((*p++ = *q++));
 
 	if (sscanf(argv[2], "%f", &accept_level) != 1)  {
 		printf("Could not parse the acceptance level from %s.\n", argv[2]);
@@ -198,13 +201,15 @@ for(repeat = 0 ; repeat < 3 ; repeat++)  {
 }
 
 
-key	u_getkey()
+key u_getkey(void)
 {
+	return 0;
 }
 
 keyer	topktab[] ={{0, NULL}};
 
 
-char	*quitcmd()
+char *quitcmd(void)
 {
+	return NULL;
 }

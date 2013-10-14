@@ -15,10 +15,6 @@
 #include	"terminal.h"
 
 
-#define STANDALONE	FALSE
-
-
-
 /* Globals */
 int		stats1loaded = FALSE;	/* True if letter stats loaded. */
 char	*letterstats;			/* Filename to find single letter counts. */
@@ -108,16 +104,17 @@ float	score1_mean, score1_var, score1_sd, score1_scale;
 /* Forward declarations */
 void stats2(void);
 void load_2stats(FILE *inp);
+void print_2stats(FILE *out);
 void print_stat_tab(FILE *out, float table[], int maxindex);
 
-#if STANDALONE
+#ifdef STATS_STANDALONE
 #define	filename		"/usr/baldwin/Ecrypt/mss-bigram.stats"
-void main(void)
+int main(void)
 {
-	FILE	*inp;
-
 	load_2stats_from(filename);
-	print_2stats(stdout);
+ 	print_2stats(stdout);
+
+	return 0;
 }
 #endif
 
@@ -126,8 +123,7 @@ void main(void)
 /* Score the given plaintext block.  Returns a floating point number.
  * For now a stud.
  */
-float	score(pblock)
-int		pblock[];
+float	score(int pblock[])
 {
 	int		pchar;
 	int		i;
@@ -158,8 +154,7 @@ int		pblock[];
  * Scores are positive with low scores being better.
  * A negative score indicates an impossible plaintext value.
  */
-float	pvec_1score(pvec)
-int	*pvec;
+float	pvec_1score(int *pvec)
 {
 	int		c;
 	float	tmp, sum, count, score;
@@ -199,8 +194,7 @@ int	*pvec;
  * The vector is terminated by a value of NONE.
  * Scoring is based on ratio of observed and expected variance.
  */
-float	var_1score(pvec)
-int	*pvec;
+float	var_1score(int *pvec)
 {
 	int		c;
 	float	tmp, sum, count, score;
@@ -234,8 +228,7 @@ int	*pvec;
  * were drawn from english.
  * NOTE: doesn't correctly handle repeated letters.
  */
-float	prob_1score(pvec)
-int	*pvec;
+float	prob_1score(int *pvec)
 {
 	int		c;
 	float	product, count, score;
@@ -387,10 +380,7 @@ reg	float	tmp;
  * a vector of probabilities for values and a vector of
  * scores for each value.
  */
-float	vec_mean(probvec, scorevec, maxindex)
-float	*probvec;
-float	*scorevec;
-int		maxindex;
+float	vec_mean(float *probvec, float *scorevec, int maxindex)
 {
 	int		i;
 	float	mean;
@@ -407,10 +397,7 @@ int		maxindex;
  * a vector of probabilities for values and a vector of
  * scores for each value.
  */
-float	vec_variance(probvec, scorevec, maxindex)
-float	*probvec;
-float	*scorevec;
-int		maxindex;
+float	vec_variance(float *probvec, float *scorevec, int maxindex)
 {
 	int		i;
 	float	var, mean;
@@ -438,8 +425,7 @@ int		maxindex;
  * <Blankline>
  * <EOF>
  */
-void load_1stats(inp)
-FILE	*inp;
+void load_1stats(FILE *inp)
 {
 	int		i,n;
 	int		tmp;
@@ -503,8 +489,7 @@ FILE	*inp;
 
 /* Load the letter pair statistics from the given file name.
  */
-void load_2stats_from(statfname)
-char	*statfname;		/* Full path name of file with statistics. */
+void load_2stats_from(char *statfname)
 {
 	FILE	*inp;
 
@@ -724,8 +709,7 @@ register	int	i,j,k;
 
 /* Print the bigram statistics.
  */
-void print_2stats(out)
-FILE	*out;
+void print_2stats(FILE *out)
 {
 	float	sllog_mean;
 	float	sllog_var;
@@ -748,8 +732,7 @@ FILE	*out;
 
 /* Print the first order log statistics on a stream.
  */
-void print_1stats(out)
-FILE	*out;
+void print_1stats(FILE *out)
 {
 
 	fprintf(out, "Single letter frequencies\n");
@@ -780,8 +763,7 @@ void print_stat_tab(FILE *out, float table[], int maxindex)
 
 /* Load the first order statistics from the given file name.
  */
-void load_1stats_from(statfname)
-char	*statfname;
+void load_1stats_from(char *statfname)
 {
 	FILE	*inp;
 

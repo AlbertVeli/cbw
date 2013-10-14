@@ -1,4 +1,9 @@
-CFLAGS = -g
+DBGFLAGS = -g -O0
+
+CFLAGS = $(DBGFLAGS) -W -Wall
+
+LIBS = -lcurses -ltermcap -lm
+
 
 # Object files for for the workbench.
 cbreq =	pword.o lpair.o approx.o \
@@ -9,60 +14,66 @@ cbreq =	pword.o lpair.o approx.o \
 		pgate.o perm.o terminal.o \
 		keylib.o windowlib.o dline.o screen.o 
 
+all: cbw zeecode enigma bd sd approx stats tri
+
 # The main program.
 cbw: start.o $(cbreq) 
-	cc $(CFLAGS) start.o $(cbreq) \
-	-lcurses -ltermcap -lm -o cbw
+	$(CC) $(CFLAGS) start.o $(cbreq) \
+	-o cbw $(LIBS)
 
 # Program to decrypt files after they have been broken by CBW.
 zeecode: zeecode.o
-	cc $(CFLAGS) zeecode.o -o zeecode
+	$(CC) $(CFLAGS) zeecode.o -o zeecode
 
 # Program to encrypt files, this is identical to the
 # Unix crypt function based on a two rotor enigma.
 enigma: enigma.o
-	cc $(CFLAGS) enigma.o -o enigma
+	$(CC) $(CFLAGS) enigma.o -o enigma
 
 #
 # The remaining files are test drivers.
 #
 
 bd: bdriver.o $(cbreq)
-	cc -g bdriver.o $(cbreq) -lm \
-	-lcurses -ltermcap -lm -o bd
+	$(CC) $(CFLAGS) bdriver.o $(cbreq) -lm \
+	-o bd $(LIBS)
 
 sd: sdriver.o $(cbreq)
-	cc -g sdriver.o $(cbreq) \
-	-lcurses -ltermcap -lm -o sd
+	$(CC) $(CFLAGS) sdriver.o $(cbreq) \
+	-o sd $(LIBS)
 
-approx: approx.o
-	cc -g approx.o -lm -o approx
+approx: approx.c
+	$(CC) $(CFLAGS) -DAPPROX_STANDALONE -o approx approx.c -lm
 
-stats: stats.o char-io.o
-	cc -g stats.o char-io.o -lm -o stats
+stats: stats.c char-io.o approx.o
+	$(CC) $(CFLAGS) -DSTATS_STANDALONE -o stats stats.c char-io.o approx.o -lm
 
 tri: tdriver.o $(cbreq)
-	cc -g tdriver.o $(cbreq) -lm \
-	-lcurses -ltermcap -lm -o tri
+	$(CC) $(CFLAGS) tdriver.o $(cbreq) -lm \
+	-o tri $(LIBS)
 
 ectreq = edriver.o eclass.o cipher.o char-io.o \
-		triglist.o \
 		webster.o user.o gblock.o dblock.o dbsaux.o banner.o \
-		cblocks.o trigram.o stats.o parser.o knit.o \
+		cblocks.o stats.o parser.o knit.o \
 		pgate.o perm.o \
 		keylib.o windowlib.o dline.o screen.o 
+#		trigram.o triglist.o
 
 
 ect: $(ectreq)
-	cc -g $(ectreq) -lm \
+	$(CC) $(CFLAGS) $(ectreq) -lm \
 	-o ect
 
 ptt: char-io.o probtab.o
-	cc -g char-io.o probtab.o -lm -o ptt
+	$(CC) $(CFLAGS) char-io.o probtab.o -lm -o ptt
 
 dt: disptest.o keylib.o windowlib.o screen.o
-	cc disptest.o keylib.o windowlib.o screen.o -o dt
+	$(CC) $(CFLAGS) disptest.o keylib.o windowlib.o screen.o -o dt
 
-triplace: triplace.o
+#triplace: triplace.o
 
 
+.PHONY: clean
+
+clean:
+	rm -f cbw start.o $(cbreq) zeecode zeecode.o enigma enigma.o bd bdriver.o sd sdriver.o approx stats tri tdriver.o ect $(ectreq) ptt probtab.o dt disptest.o *~

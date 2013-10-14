@@ -53,8 +53,7 @@ int	*permalloc(void)
  * for the given block number.
  * Return NULL if the block number is bad.
  */
-int	*refperm(blocknum)
-int	blocknum;
+int	*refperm(int blocknum)
 {
 	int		i;
 
@@ -81,8 +80,7 @@ int	blocknum;
  * Each block is separated by a newline character.
  * Individual numbers are separated by blanks.
  */
-char	*permsave(str)
-char	*str;
+char	*permsave(char *str __attribute__((unused)))
 {
 	FILE	*fd;
 	int		i;
@@ -110,8 +108,7 @@ char	*str;
  * Return NULL if successful, else ptr to error message.
  * Also call dblock to update its display.
  */
-char	*permload(str)
-char	*str;
+char	*permload(char *str __attribute__((unused)))
 {
 	FILE	*fd;
 	int		i;
@@ -140,9 +137,7 @@ char	*str;
 
 /* Compute a permutation raised to some power.
  */
-void expperm(srcperm, dstperm, power)
-int	*srcperm, *dstperm;
-int	power;
+void expperm(int *srcperm, int *dstperm, int power)
 {
 	int		i, k, v;
 
@@ -159,10 +154,7 @@ int	power;
 
 /* Computer product of two permutations.
  */
-void multperm(left, right, result)
-int		*left;
-int		*right;
-int		*result;
+void multperm(int *left, int *right, int *result)
 {
 	int		i, v;
 
@@ -176,9 +168,7 @@ int		*result;
 
 /* Write a permutation onto the given stream.
  */
-void writeperm(fd, perm)
-FILE	*fd;
-int		perm[];
+void writeperm(FILE *fd, int perm[])
 {
 	int		j;
 
@@ -194,9 +184,7 @@ int		perm[];
 
 /* Copy a permutation to another buffer.
  */
-void copyperm(src, dst)
-int		src[];
-int		dst[];
+void copyperm(int src[], int dst[])
 {
 	int		j;
 
@@ -208,9 +196,7 @@ int		dst[];
 
 /* Read a permutation from the given stream into the given buffer.
  */
-void readperm(fd, perm)
-FILE	*fd;
-int		perm[];
+void readperm(FILE *fd, int perm[])
 {
 	int		j;
 
@@ -226,8 +212,7 @@ int		perm[];
  * are not equal to -1.
  * Max value is 256.
  */
-int	permcount(perm)
-int		perm[];
+int	permcount(int perm[])
 {
 	int		i;
 	int		count;
@@ -245,8 +230,7 @@ int		perm[];
  * if it has fixed points.
  * Max value is 128.
  */
-int	permwcount(perm)
-int		perm[];
+int	permwcount(int perm[])
 {
 	int		i,v;
 	int		count;

@@ -1,4 +1,4 @@
-static char *sccsid = "@(#)crypt.c	4.2 (Berkeley) 7/9/81";
+/* static char *sccsid = "@(#)crypt.c	4.2 (Berkeley) 7/9/81"; */
 
 /*
  *	A one-rotor machine designed along the lines of Enigma
@@ -7,6 +7,11 @@ static char *sccsid = "@(#)crypt.c	4.2 (Berkeley) 7/9/81";
 
 #define ECHO 010
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #define ROTORSZ 256
 #define MASK 0377
 char	t1[ROTORSZ];
@@ -16,8 +21,10 @@ char	deck[ROTORSZ];
 char	*getpass();
 char	buf[13];
 
-setup(pw)
-char *pw;
+/* Forward declarations */
+void shuffle(char deck[]);
+
+void setup(char *pw)
 {
 	int ic, i, k, temp, pf[2];
 	unsigned random;
@@ -70,10 +77,9 @@ char *pw;
 		t2[t1[i]&MASK] = i;
 }
 
-main(argc, argv)
-char *argv[];
+int main(int argc, char *argv[])
 {
-	register i, n1, n2, nr1, nr2;
+	register int i, n1, n2, nr1, nr2;
 	int secureflg = 0;
 
 	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 's') {
@@ -111,10 +117,11 @@ char *argv[];
 			}
 		}
 	}
+
+	return 0;
 }
 
-shuffle(deck)
-	char deck[];
+void shuffle(char deck[])
 {
 	int i, ic, k, temp;
 	unsigned random;
