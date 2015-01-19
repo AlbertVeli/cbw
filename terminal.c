@@ -224,6 +224,16 @@ int read_varval(char **strp, char **valp);
 void read_graphics(char *var);
 void term_beep(void);
 
+static void _noecho(void)
+{
+	system("stty -echo -icanon");
+}
+
+static void _echo(void)
+{
+	system("stty sane");
+	system("stty -echo -icanon -ixon");
+}
 
 /* Set up the terminal. This package now makes calls to both curses
  * and termcap subroutine packages, although the old code is used
@@ -239,7 +249,7 @@ void setup_term(void)
 	get_kenv();
 	savetty();
 	crmode();
-	noecho();
+	_noecho();
 	noflow();
 	Puts(term_is);
 	Puts(start_kp);
@@ -579,8 +589,10 @@ void get_termstrs(void)
 	erase_eol = tgetstr("ce", &fr);
 	erase_eos = tgetstr("cd", &fr);
 	erase_scr = tgetstr("cl", &fr);
-	start_so = tgetstr("so", &fr);
-	end_so = tgetstr("se", &fr);
+/*	start_so = tgetstr("so", &fr); */
+/*	end_so = tgetstr("se", &fr); */
+	start_so = "\033[4m";
+	end_so = "\033[0m";
 	start_alt = tgetstr("as", &fr);
 	end_alt = tgetstr("ae", &fr);
 	if (start_alt == 0  ||  end_alt == 0) {
@@ -623,7 +635,7 @@ void unset_term(void)
 	Puts(end_kp);		/* Can't tell if this is original. */
 	fflush(stdout);
 	nocrmode();
-	echo();
+	_echo();
 	restore_flow();
 	resetty();
 }
